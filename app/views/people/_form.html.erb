@@ -1,0 +1,39 @@
+<%= form_with model: person do |form| %>
+  <% if person.errors.any? %>
+    <ul class="errors">
+      <% person.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  <% end %>
+
+  <div class="field">
+    <%= label_tag :name, "First name" %>
+    <%= text_field_tag :name, person.name %>
+  </div>
+
+  <div class="field">
+    <%= label_tag :surname %>
+    <%= text_field_tag :surname, person.surname %>
+  </div>
+
+  <div class="field">
+    <%= label_tag :email %>
+    <%= email_field_tag :email, person.email, required: true %>
+    <span class="hint">How this member is identified. Must be unique.</span>
+  </div>
+
+  <div class="field">
+    <%= label_tag :born_on, "Birthday" %>
+    <%= date_field_tag :born_on, person.born_on %>
+  </div>
+
+  <div class="field">
+    <%= label_tag :joined_on, "Joined the club" %>
+    <%= date_field_tag :joined_on, person.joined_on %>
+    <span class="hint">New players start last, so this decides where they enter the board.</span>
+  </div>
+
+  <% action = person.persisted? ? "Save member" : "Add member" %>
+  <%= form.submit action %>
+<% end %>

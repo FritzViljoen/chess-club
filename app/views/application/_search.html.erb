@@ -1,0 +1,9 @@
+<%= form_with url: url, method: :get, class: "search" do %>
+  <%= label_tag :search, label, class: "visually-hidden" %>
+  <%= search_field_tag :search, listing.query, placeholder: label %>
+  <%= hidden_field_tag :sort, listing.sort if listing.sort.present? %>
+  <%= submit_tag "Search" %>
+  <% if listing.searching? %>
+    <%= link_to "Clear", url, class: "clear" %>
+  <% end %>
+<% end %>

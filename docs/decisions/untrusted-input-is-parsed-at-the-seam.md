@@ -23,10 +23,13 @@ operation grows its own answer for bad input.
 
 **One module parses request input: `app/controllers/concerns/typed_params.rb`.**
 It offers `date_param`, `time_param`, `integer_param`, `decimal_param`,
-`boolean_param` and `enum_param`, each with a bang form.
+`boolean_param`, `enum_param`, `time_zone_param` and `text_param`, each with a
+bang form.
 
 The plain form answers with the caller's default when the value is missing or
-unparseable. The bang form raises `BadParam`, which the concern turns into a
+unparseable. `text_param` is the exception: too long refuses in both forms,
+because its default is "no search" and a silent fallback would answer an
+over-long term with every row there is. The bang form raises `BadParam`, which the concern turns into a
 flash and a redirect for an HTML request and a plain 400 for anything else.
 
 `Controller/NoInlineParamParse` fails CI on a raising parse of anything reached

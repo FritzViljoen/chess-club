@@ -108,14 +108,16 @@ and no flag deciding which of the two a call is doing.
 
 ## `untrusted-input-is-parsed-at-the-seam` — Request input is parsed by `TypedParams`, at the seam, and nowhere else
 
-A parameter is a string somebody typed. It becomes a Date, an Integer, a decimal,
-a boolean or a value from a closed set in `app/controllers/concerns/typed_params.rb`,
-and it does so once. Never inline in an action, where `Date.parse(params[:on])`
+A parameter is a string somebody typed. It becomes a Date, a Time, an Integer, a
+decimal, a boolean, a zone, a bounded string, or a value from a closed set — in
+`app/controllers/concerns/typed_params.rb`, and once. Never inline in an action, where `Date.parse(params[:on])`
 turns a typo into a 500; never in the domain, which is handed real values and
 asserts them.
 
 Each parser has two forms: the plain one answers with the caller's default, the
-bang form bounces as `BadParam` — a flash and a redirect for an HTML request, a
+bang form bounces as `BadParam`. A term over `text_param`'s limit bounces from
+both — its default is "no search", and falling back to that answers an over-long
+search with everything — a flash and a redirect for an HTML request, a
 plain 400 for anything else.
 
 - **Principle:** `nothing-fails-quietly`, `one-decision-one-place`

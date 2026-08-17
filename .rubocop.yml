@@ -53,6 +53,14 @@ Controller/NoInlineParamParse:
   Include:
     - "app/controllers/**/*.rb"
 
+# A raw parameter reaching a record: Active Record coerces the string, so
+# `find(params[:id])` serves record 1 for `1abc` and nothing fails. The parsers
+# cannot defend a door nobody opened.
+Controller/NoUnparsedLookup:
+  Enabled: true
+  Include:
+    - "app/controllers/**/*.rb"
+
 # No industry vocabulary in code. Applied from the start rather than ratcheted
 # down later, because this tree is new and can simply not acquire the debt.
 #
