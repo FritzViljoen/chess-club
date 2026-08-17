@@ -1,8 +1,33 @@
 # Omakase Ruby styling for Rails
 inherit_gem: { rubocop-rails-omakase: rubocop.yml }
 
-# Overwrite or add rules to create your own house style
+# Loads every cop under lib/rubocop/cop/schema.
+require:
+  - ./lib/rubocop/schema.rb
+
+# House rules for the schema, documented at the top of each cop: a nullable
+# column and a database default each put a second, invisible answer next to
+# the model's.
 #
-# # Use `[a, [b, c]]` not `[ a, [ b, c ] ]`
-# Layout/SpaceInsideArrayLiteralBrackets:
-#   Enabled: false
+# Migrations copied in from an engine (`*.active_storage.rb` and the like) are
+# excluded. They are not ours to edit, so holding them to a house rule would
+# only ever mean a red build.
+Schema/NoNullableColumns:
+  Enabled: true
+  Include:
+    - "db/migrate/*.rb"
+  Exclude:
+    - "db/migrate/*.*.rb"
+
+Schema/NoColumnDefaults:
+  Enabled: true
+  Include:
+    - "db/migrate/*.rb"
+  Exclude:
+    - "db/migrate/*.*.rb"
+
+# Fights Schema/NoNullableColumns: it wants a default alongside NOT NULL
+# so the migration survives a populated table. Add the column nullable,
+# fill it and promote it with `change_column_null` instead.
+Rails/NotNullColumn:
+  Enabled: false
