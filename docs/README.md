@@ -23,9 +23,19 @@ A lower layer defers to a higher one on conflict.
 3. **Decisions** — one claim per file, each carrying its full reasoning. A
    decision may refine a law; none may contradict the constitution.
 
-Everything in these three layers is written in the present tense. They describe
-what is true now, not what changed and when — why something changed belongs in
-the decision that changed it.
+## What these documents describe
+
+**Documentation states how the system should look — not how it is, and not how it
+was.** It is the specification the code is held against, so a gap between a
+document and the code is a defect in the code until a decision says otherwise. A
+document is never updated to record that reality drifted; reality is brought
+back, or the intended shape is changed on purpose by a decision.
+
+So the three layers are written in the present tense and carry no history. No
+dates, no "previously", no "we used to". **Historic context goes in the decision
+records** — what was tried, what it cost, why the road was closed. Those are the
+only documents that look backwards, and they are the reason the rest do not have
+to.
 
 ## Two conventions
 
