@@ -1,0 +1,2 @@
+# Deliberately empty, for the reason given in people.yml: the file exists so that
+# `fixtures :all` clears this table before each test.
