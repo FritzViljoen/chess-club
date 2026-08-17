@@ -1,6 +1,11 @@
 # a-service-returns-a-result — Every service answers with a result
 
-- **Status:** Accepted
+> **Superseded on 2026-08-17** by
+> [`a-service-answers-with-what-it-made`](a-service-answers-with-what-it-made.md).
+> Left in place because the reasoning below is still correct about Ruby, and the
+> superseding record says exactly when it would be right to come back to it.
+
+- **Status:** Superseded by [`a-service-answers-with-what-it-made`](a-service-answers-with-what-it-made.md)
 - **Date:** 2026-08-17
 - **Deciders:** FV
 - **Enacts:** constitution → `a-service-returns-a-result`

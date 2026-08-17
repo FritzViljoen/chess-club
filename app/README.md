@@ -21,7 +21,10 @@ constant.
 
 **Identifiers use plain words**, never the vocabulary of the game — no `Match`, no
 `draw`, no leaderboard, no "upset"
-([`plain-words-in-code`](../docs/decisions/plain-words-in-code.md)).
+([`plain-words-in-code`](../docs/decisions/plain-words-in-code.md)). **Screens are
+the exception**: user-facing copy in `app/views/` says the club's own words on
+purpose, and [`views/README.md`](views/README.md) explains where the line falls.
+The rule above binds everything that is not a template.
 
 **One way to say each thing.** Repeating an identical shape is fine; a second
 spelling of the same operation is the defect, because every rule about that
