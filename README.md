@@ -1,8 +1,20 @@
 # Chess Club Administration
 
-A small Rails application for a local chess club to administer its members
-and keep their ranking current. Members are ranked `1..n`, where 1 is the
-club's strongest player; recording a match updates the ranking.
+A small Rails application for a local chess club to administer its players and
+keep their standings current. Everyone is ranked `1..n`, where 1 is the club's
+strongest player; recording a result updates the standings.
+
+## Documentation
+
+| If you want | Read |
+|---|---|
+| How the code is built | [`docs/principles.md`](docs/principles.md) |
+| The rules it must obey, and their guards | [`docs/constitution.md`](docs/constitution.md) |
+| Why a specific decision was made | [`docs/decisions/`](docs/decisions/) |
+
+Folder-level notes live beside the code: [`app/`](app/README.md),
+[`db/`](db/README.md), [`lib/rubocop/`](lib/rubocop/README.md),
+[`test/`](test/README.md).
 
 ## Requirements
 
