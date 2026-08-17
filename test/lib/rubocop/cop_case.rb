@@ -3,12 +3,15 @@ require "rubocop"
 require_relative "../../../lib/rubocop/schema"
 require_relative "../../../lib/rubocop/model"
 require_relative "../../../lib/rubocop/vocabulary"
+require_relative "../../../lib/rubocop/service"
+require_relative "../../../lib/rubocop/controller"
 
 # Base class for the house-cop tests.
 #
 # A subclass names its cop with `polices`, then asserts on a fragment of
 # migration source: `table` wraps it in a `create_table` block, `migration`
-# uses it as the migration body as written. A cop that reads somewhere other
+# uses it as the migration body as written, and `source` is Ruby as written for
+# a cop that does not read migrations at all. A cop that reads somewhere other
 # than db/migrate says so with `on_path`, and one that takes settings from
 # .rubocop.yml declares them with `configured`.
 class CopCase < ActiveSupport::TestCase
@@ -62,6 +65,15 @@ class CopCase < ActiveSupport::TestCase
 
     def assert_class_clean(methods)
       assert_offenses migration_class(methods), 0
+    end
+
+    # Ruby as written, for a cop whose subject is not a migration.
+    def assert_source_offense(source, count: 1)
+      assert_offenses source, count
+    end
+
+    def assert_source_clean(source)
+      assert_offenses source, 0
     end
 
     def assert_offenses(source, expected)

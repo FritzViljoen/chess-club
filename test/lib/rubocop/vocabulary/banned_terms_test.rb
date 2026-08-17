@@ -103,9 +103,4 @@ class BannedTermsTest < CopCase
 
     assert_operator elapsed, :<, 1.0, "scanning #{padding.length} chars took #{elapsed}s"
   end
-
-  private
-    def assert_source_offense(source, count: 1)
-      assert_offenses source, count
-    end
 end
