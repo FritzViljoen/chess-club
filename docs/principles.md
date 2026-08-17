@@ -27,9 +27,9 @@ that every reader has to disambiguate and none can.
 
 A rule a caller cannot reach gets copied. So a rule lives where every caller can
 call it, and unreachability is a structural defect to fix, not a licence to
-restate the rule locally under a comment promising to keep it in sync. The
-ranking rules are the worked example: one object owns them, it knows nothing
-about the database, and every caller goes through it.
+restate the rule locally under a comment promising to keep it in sync. One object
+owns a decision, it knows nothing about the database, and every caller goes
+through it.
 
 ### `make-the-wrong-thing-impossible` — Make the wrong thing impossible, not merely forbidden
 
@@ -54,9 +54,9 @@ the reader who has not cannot tell a rule from a ritual.
 The distinction that matters: **the rules of a domain are worth modelling; the
 vocabulary around them is not.** How positions move when two participants meet is
 the domain. That the participants are chess players, that an equal result is called
-a draw, that a weaker player winning is called an upset — none of that is. So a
-contest is a `Game`, an equal result is a `tie`, and the ranked list is the
-`standings`.
+a draw, that a weaker player winning is called an upset — none of that is. Name a
+thing for what the code does with it, and keep the industry's own word in data,
+where it can change without a deploy.
 
 When the generic word and the specialist word both fit, the generic one wins. This
 binds identifiers, comments, tests and these documents; it does not bind a quotation
@@ -67,8 +67,11 @@ translation errors between conversation and code — and it is answered in
 [`decisions/plain-words-in-code.md`](decisions/plain-words-in-code.md), which also
 records the cost of overriding it.
 
-*Produces* `plain-words-in-code`, which has no guard: whether a word is jargon is a
-judgement, and no check can make it.
+*Produces* `plain-words-in-code`, which is guarded in the half that can be: a cop
+holds a list of banned terms and fails the build on any of them. **What belongs on
+that list is the judgement, and no check makes it.** A principle producing a law
+that is half-checkable is the usual case, not a compromise — the checkable half is
+what stops the debt accumulating while the judgement is being argued.
 
 ### `one-way-to-say-each-thing` — One way to say each thing; variation is the defect
 
@@ -114,8 +117,8 @@ this rules out the `is_a?` check that exists to work around one implementation.
 
 An object should not be handed a collaborator with twenty methods so it can call
 one. It also should not be handed a whole record so it can read one field, or a
-whole database so it can read one row — which is why the object that owns the
-ranking rules takes the standings and a result, and knows nothing about storage.
+whole database so it can read one row. An object that owns a decision takes the
+values that decision needs, and nothing else.
 
 ### `dependency-inversion` — The rule does not reach for its plumbing
 
@@ -123,5 +126,3 @@ The object holding a decision does not open a connection, read a config file or
 find its own collaborators. They arrive as arguments. The caller — which already
 knows where it is running — supplies them. That is what makes a rule testable
 without a database and reusable from a second caller.
-
-*Produces* `the-ranking-rules-live-in-one-object`.

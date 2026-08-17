@@ -17,14 +17,14 @@ decided in the model.
 order** (constitution → `a-nullable-column-lives-inside-one-migration`):
 
 ```ruby
-add_column :members, :email, :string
-Member.update_all(email: "")
-change_column_null :members, :email, false
+add_column :people, :email, :string
+Person.update_all(email: "")
+change_column_null :people, :email, false
 ```
 
 The promotion must come *later in the same method*. One in `down` promotes nothing
 on the way forward; one written above the `add_column` runs before the column
-exists. Promote the column that really exists — `add_reference :members, :club`
+exists. Promote the column that really exists — `add_reference :people, :club`
 creates `club_id`, and a polymorphic reference creates `club_type` too.
 
 **The reverse direction is exempt from both rules.** Restoring a nullable column or

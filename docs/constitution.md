@@ -57,36 +57,8 @@ invokes.
 - **Guard:** `Model/NoCallbacks`, scoped to `app/models/**/*.rb`. Fails CI.
 - **Decision:** [`no-lifecycle-callbacks.md`](decisions/no-lifecycle-callbacks.md)
 
-## `ranks-are-a-dense-unique-sequence` — Ranks are exactly `1..n`, one member per rank
 
-Every member holds a rank. No rank is shared, no rank is skipped, and the highest
-rank is the number of members. Adding a member appends at `n + 1`; removing one
-closes the gap.
 
-- **Principle:** `the-schema-states-the-invariant`
-- **Guard:** a unique index on `rank`, plus a test asserting the sequence is a
-  permutation of `1..n` after every operation.
-
-## `a-game-is-recorded-in-one-transaction` — Recording a game is all-or-nothing
-
-Persisting the game, applying every rank change and incrementing both players'
-game counts happen in one transaction. A half-applied shuffle would leave the
-standings in a state no rule allows.
-
-- **Principle:** `nothing-fails-quietly`, `the-schema-states-the-invariant`
-- **Guard:** a test that forces a failure mid-shuffle and asserts the standings
-  are unchanged.
-
-## `the-ranking-rules-live-in-one-object` — One object owns the ranking rules and knows nothing about storage
-
-The rules that decide new ranks live in a single plain object. It takes the
-current standings and a result, and returns the ranks that changed. It performs
-no queries and holds no records, so it can be tested directly against the worked
-examples.
-
-- **Principle:** `one-decision-one-place`
-- **Guard:** none that a machine can apply. A reviewer checks that no other file
-  computes a rank.
 
 ## `ci-is-one-command` — CI runs exactly what a developer runs
 
@@ -99,13 +71,20 @@ drift.
 
 ## `plain-words-in-code` — Identifiers use plain words
 
-No industry term in a name: a contest is a `Game`, an equal result is a `tie`, the
-ranked list is the `standings`. Binds identifiers, comments, tests and documents;
-not a quotation of the brief.
+No industry term in a name. Name a thing for what the code does with it; the
+industry's own word belongs in data, where it can change without a deploy. Binds
+identifiers, comments, tests and documents; not a quotation of the brief.
 
 - **Principle:** `no-industry-terms`
-- **Guard:** none. This is a judgement a reviewer makes, and no check can make
-  it.
+- **Guard:** `Vocabulary/BannedTerms`, over `app/**/*.rb` and `db/**/*.rb`. Fails
+  CI. It holds a list, in `.rubocop.yml` under `BannedTerms`, and reads a name the
+  way a reader does — splitting on separators *and* on case humps, so `person_id`,
+  `club_person`, `PersonCount` and `PERSON_COUNT` all match one entry while
+  `personal` does not. Matching is case-insensitive but does not inflect, so every
+  plural is listed as its own term. Comments and strings are scanned too.
+- **Guard's limit:** the list is checkable; **what belongs on it is not.** Adding a
+  term is a judgement, and no check makes it. `test/` is exempt, because a fixture
+  naming the term it tests the ban on is not a breach of the ban.
 - **Decision:** [`plain-words-in-code.md`](decisions/plain-words-in-code.md)
 
 ## `a-non-trivial-choice-is-a-decision-record` — A non-trivial choice gets a record, not a code comment

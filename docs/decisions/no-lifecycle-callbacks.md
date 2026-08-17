@@ -12,7 +12,7 @@ field, `after_create_commit` to send mail, `after_destroy` to tidy up. It is the
 path of least resistance, and each one reads as a small convenience at the point it
 is written.
 
-The cost is paid by the caller, who cannot see any of it. `member.save!` reads as
+The cost is paid by the caller, who cannot see any of it. `person.save!` reads as
 one operation and performs several, and the only way to find out which is to read
 the whole class and every concern mixed into it.
 
@@ -44,11 +44,11 @@ table.
 
 **The caller cannot see the work, so it cannot decide about it.** That is the real
 objection: the decision to send mail belongs to the code that decided to create the
-member, not to the act of writing a row.
+row, not to the act of writing it.
 
 ## Trade-offs accepted
 
-- **The caller has to remember.** `member.normalize_email` then `member.save!` is
+- **The caller has to remember.** `person.normalize_email` then `person.save!` is
   two lines, and forgetting the first is possible in a way a `before_save` is not.
   Where forgetting would be a defect rather than an inconvenience, the invariant
   belongs in the schema, which no caller can skip

@@ -20,9 +20,12 @@ it.
 
 ## Decision
 
-**Identifiers use plain words.** A contest between two members is a `Game`. An
+**Identifiers use plain words.** A contest between two participants is a `Game`. An
 equal result is a `tie`. The ranked list is the `standings`. The case where the
-lower-ranked member wins is named for what it is, not called an upset.
+lower-ranked participant wins is named for what it is, not called an upset.
+
+The industry's own noun for a thing is banned outright rather than discouraged: the
+banned list lives in `.rubocop.yml` and a cop fails the build on any term in it.
 
 This binds code, tests and these documents. It does not bind the brief, which is
 quoted as written.
@@ -32,6 +35,8 @@ quoted as written.
 The rules of the ranking are the domain worth modelling; the jargon around them is
 not. Nothing in `Game`, `tie` or `standings` loses information relative to the
 specialist term, and each is understood by a reader who has never been in a club.
+The industry's word is not lost either — it belongs in data, where changing it costs
+no deploy.
 Where a plain word and a specialist word both fit exactly, the plain one costs
 nothing and asks less.
 
@@ -56,7 +61,7 @@ translation errors between conversation and code. It is accepted below.
 
 ## Consequences
 
-- Model names: `Member`, `Game`. Outcome values name the participants and the tie,
-  not the game's terms of art.
+- A record about people is a `Person`, not the club's word for one. Outcome values
+  name the participants and the tie, not the game's terms of art.
 - The standings view is `standings`, not a leaderboard.
 - A reviewer rejecting a jargon name cites this record rather than arguing taste.

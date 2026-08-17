@@ -10,12 +10,12 @@
 
 `t.integer :games_played, null: false, default: 0` is the ordinary way to give a
 counter a starting value. It is also a second place that decides what a new
-member's game count is. The model says one thing — or says nothing, and inherits
+row's counter starts at. The model says one thing — or says nothing, and inherits
 the schema's answer without saying so — and the database says another.
 
-The two disagree the moment either changes. A model that starts new members at
-zero and a column that defaults to zero are redundant until someone changes one
-of them; then the answer depends on which path wrote the row.
+The two disagree the moment either changes. A model that starts a counter at zero
+and a column that defaults to zero are redundant until someone changes one of
+them; then the answer depends on which path wrote the row.
 
 ## Decision
 
@@ -29,7 +29,7 @@ existing table.
 
 ## Rationale
 
-A default is invisible at the call site. Reading `Member.create!(name: "…")` tells
+A default is invisible at the call site. Reading `Person.create!(name: "…")` tells
 you nothing about what `games_played` will be; you have to go and read the
 schema, and the schema is the one file nobody reads before writing a create.
 Putting the value in the model puts it where the reader already is, and where a

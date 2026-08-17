@@ -30,4 +30,3 @@ amended by a decision that names the law it changes.
 | [`no-database-defaults`](no-database-defaults.md) | No column carries a database default |
 | [`a-nullable-column-lives-inside-one-migration`](a-nullable-column-lives-inside-one-migration.md) | A column may be nullable only between two statements of one method |
 | [`no-lifecycle-callbacks`](no-lifecycle-callbacks.md) | No model registers an Active Record lifecycle callback |
-| [`a-two-rank-gap-favours-the-winner`](a-two-rank-gap-favours-the-winner.md) | Where the brief contradicts itself, the winner's stated gain is honoured |

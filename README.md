@@ -1,8 +1,8 @@
 # Chess Club Administration
 
-A small Rails application for a local chess club to administer its members
-and keep their standings current. Members are ranked `1..n`, where 1 is the
-club's strongest player; recording a game updates the standings.
+A small Rails application for a local chess club to administer its players and
+keep their standings current. Everyone is ranked `1..n`, where 1 is the club's
+strongest player; recording a game updates the standings.
 
 ## Documentation
 

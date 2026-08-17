@@ -14,7 +14,7 @@
 operation impossible as stated: adding a required column to a table that already
 holds rows.
 
-SQLite refuses it outright — `ALTER TABLE members ADD COLUMN email TEXT NOT NULL`
+SQLite refuses it outright — `ALTER TABLE people ADD COLUMN email TEXT NOT NULL`
 returns `Cannot add a NOT NULL column with default value NULL` as soon as the
 table has a single row. (On an empty table it succeeds, which makes the failure
 one you meet in production and not in development.) The two escapes are a
@@ -26,9 +26,9 @@ default, which is forbidden, and adding the column nullable, which is forbidden.
 sanctioned form is three steps:
 
 ```ruby
-add_column :members, :email, :string
-Member.update_all(email: "")
-change_column_null :members, :email, false
+add_column :people, :email, :string
+Person.update_all(email: "")
+change_column_null :people, :email, false
 ```
 
 `Schema/NoNullableColumns` accepts a column with no `null: false` when a matching
@@ -52,7 +52,7 @@ The remaining gap is a promotion inside a conditional that never runs
 (`if false`). It is accepted: no author writes that except to defeat the cop, and
 anyone willing to do that has `rubocop:disable` available anyway.
 
-A reference needed special handling. `add_reference :members, :club` creates
+A reference needed special handling. `add_reference :people, :club` creates
 `club_id`, so the promotion must name `club_id` — the cop resolves the identity to
 the column that really exists, and a polymorphic reference requires both `_id`
 and `_type` to be promoted.
