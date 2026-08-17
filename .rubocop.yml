@@ -6,6 +6,8 @@ require:
   - ./lib/rubocop/schema.rb
   - ./lib/rubocop/model.rb
   - ./lib/rubocop/vocabulary.rb
+  - ./lib/rubocop/service.rb
+  - ./lib/rubocop/controller.rb
 
 # House rules for the schema, documented at the top of each cop: a nullable
 # column and a database default each put a second, invisible answer next to
@@ -35,6 +37,21 @@ Model/NoCallbacks:
   Enabled: true
   Include:
     - "app/models/**/*.rb"
+
+# Every argument of a service is type-checked where it arrives. Scoped by base
+# class rather than by folder, so the whole of app/ is offered to it and the cop
+# decides; a service stays covered wherever it is filed.
+Service/NoUnguardedArguments:
+  Enabled: true
+  Include:
+    - "app/**/*.rb"
+
+# Untrusted input is parsed at the seam, by the parsers that bounce bad input and
+# read a time in the requester's zone rather than the server's.
+Controller/NoInlineParamParse:
+  Enabled: true
+  Include:
+    - "app/controllers/**/*.rb"
 
 # No industry vocabulary in code. Applied from the start rather than ratcheted
 # down later, because this tree is new and can simply not acquire the debt.
