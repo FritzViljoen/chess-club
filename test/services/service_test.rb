@@ -1,78 +1,69 @@
 require "test_helper"
 
 class ServiceTest < ActiveSupport::TestCase
-  class ArchiveRound < Service
-    def initialize(score:)
-      @score = typed(score, Integer)
+  class AddRound < Service
+    def initialize(name:)
+      @name = typed(name, String)
     end
 
     def call
-      return failure(:out_of_range) unless @score.between?(0, 2)
+      person = Person.new(
+        name: @name, surname: "Baker", email: "#{@name}@example.test",
+        born_on: Date.new(1990, 4, 2), joined_on: Date.new(2026, 1, 5)
+      )
+      person.save
 
-      success(@score)
+      person
     end
   end
 
   class RoundStanding < Service
-    def initialize(count:)
-      @count = typed(count, Integer)
+    def initialize(rows:)
+      @rows = typed_array(rows, Integer)
     end
 
     def call
-      success((1..@count).to_a)
+      @rows
     end
   end
 
-  class Sloppy < Service
-    def call
-      :done
-    end
+  test "a service answers with the thing it made" do
+    person = AddRound.call(name: "Ann")
+
+    assert_equal "Ann", person.name
+    assert person.persisted?
   end
 
-  test "a service that did the work answers with its value" do
-    result = ArchiveRound.call(score: 2)
+  test "a refused write answers with the record, and the record says why" do
+    AddRound.call(name: "Ann")
 
-    assert_predicate result, :success?
-    assert_equal 2, result.value
-    assert_nil result.error
+    repeated = AddRound.call(name: "Ann")
+
+    assert_not repeated.persisted?, "expected the duplicate not to be stored"
+    assert repeated.errors.any?, "expected the record to carry why it was refused"
+    assert_includes repeated.errors[:email], "has already been taken"
   end
 
-  test "a refusal comes back as a code the caller can handle" do
-    result = ArchiveRound.call(score: 9)
+  test "errors.none? is what a caller asks, either way" do
+    accepted = AddRound.call(name: "Bo")
 
-    assert_not_predicate result, :success?
-    assert_equal :out_of_range, result.error
-    assert_nil result.value
+    assert accepted.errors.none?
   end
 
-  test "a service that reads answers the same way, with its data" do
-    result = RoundStanding.call(count: 3)
-
-    assert_predicate result, :success?
-    assert_equal [ 1, 2, 3 ], result.value
+  test "a service that reads answers with its data" do
+    assert_equal [ 1, 2, 3 ], RoundStanding.call(rows: [ 1, 2, 3 ])
   end
 
   test "an empty answer is data, not a refusal" do
-    result = RoundStanding.call(count: 0)
-
-    assert_predicate result, :success?
-    assert_equal [], result.value
+    assert_equal [], RoundStanding.call(rows: [])
   end
 
-  test "a service asserts the types of its arguments" do
-    error = assert_raises(ArgumentError) { ArchiveRound.call(score: "2") }
-
-    assert_equal "expected Integer, got String", error.message
+  test "an argument of the wrong type is the caller's defect, and raises" do
+    assert_raises(ArgumentError) { AddRound.call(name: 42) }
+    assert_raises(ArgumentError) { RoundStanding.call(rows: [ "1" ]) }
   end
 
-  test "returning anything but a result is a defect, and says so" do
-    error = assert_raises(TypeError) { Sloppy.call }
-
-    assert_equal "ServiceTest::Sloppy#call must return a Result", error.message
-  end
-
-  test "a successful result carries no error and a refused one carries no value" do
-    assert_predicate Service::Result.success(:anything), :success?
-    assert_not_predicate Service::Result.failure(:code), :success?
+  test "call constructs with the keywords it was given" do
+    assert_equal [ 7 ], RoundStanding.call(rows: [ 7 ]), "expected .call to reach initialize"
   end
 end
