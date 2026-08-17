@@ -226,8 +226,11 @@ created before any contest naming them — the one ordering the application can
 enforce — and because a person who has played nothing does not move, so seeding
 them early changes no one else's position.
 
-`id` and `contest_id` break ties. Not as a claim about time: the fold must be
-deterministic, and two rows sharing a moment have no other order.
+`id` breaks a tie between two joins. Two contests sharing a moment are broken by
+who played in them, sorted — never by `contest_id`, because an id is entry order
+and a board that depends on entry order is what this design exists to prevent.
+Which of two simultaneous contests folds first is arbitrary; that it is the same
+arbitrary answer every time is not.
 
 ### Validations
 
