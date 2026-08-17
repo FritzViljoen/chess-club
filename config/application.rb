@@ -24,7 +24,14 @@ module ChessClub
     # These settings can be overridden in specific environments using the files
     # in config/environments, which are processed later.
     #
-    # config.time_zone = "Central Time (US & Canada)"
+    # Where the club plays. Deployment configuration, not a domain rule — a club
+    # in another country changes this line and nothing else.
+    #
+    # Deliberately not `config.time_zone`: that sets the ambient `Time.zone`,
+    # which is the thing `a-time-names-its-zone` exists to stop anything reading.
+    # Every caller names this zone explicitly, through `LocalZone`.
+    config.x.local_zone = "Africa/Johannesburg"
+
     # config.eager_load_paths << Rails.root.join("extras")
   end
 end

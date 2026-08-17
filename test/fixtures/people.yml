@@ -1,0 +1,6 @@
+# Deliberately empty. Every test builds the people it needs through CreatePerson,
+# so a row here would be a second source of the same data.
+#
+# The file still earns its place: `fixtures :all` clears the tables it has a file
+# for, and that is what stops a seeded database — `bin/ci` seeds the test one —
+# leaking into a suite that expects to start from nothing.
