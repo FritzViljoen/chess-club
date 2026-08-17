@@ -56,15 +56,3 @@ the tree goes in that part's own README, not the parent's — which is why the
 migration rules are in `db/migrate/` and not in `db/`.
 
 Nothing domain-specific belongs in a folder document.
-
-## A note on `CLAUDE.md` files
-
-Most folders here carry both a `README.md` and a `CLAUDE.md`. The README is for a
-person. The `CLAUDE.md` is the same ground compacted for an AI agent, which is
-handed it automatically when it reads any file in that folder — and is handed
-nothing else. They are kept in agreement deliberately. If they ever disagree,
-the README is the source of truth.
-
-`CLAUDE.md` files are not committed. They are working copies for whoever is
-driving an agent, regenerated from these documents rather than maintained
-separately.
