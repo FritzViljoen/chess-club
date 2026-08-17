@@ -2,7 +2,7 @@ require_relative "../cop_case"
 
 class NoCallbacksTest < CopCase
   polices RuboCop::Cop::Model::NoCallbacks
-  on_path "app/models/member.rb"
+  on_path "app/models/person.rb"
 
   test "every persistence callback is an offense" do
     assert_model_offense "before_save :normalize_email"
@@ -14,7 +14,7 @@ class NoCallbacksTest < CopCase
     assert_model_offense "before_update :stamp"
     assert_model_offense "after_update :notify"
     assert_model_offense "around_update :instrument"
-    assert_model_offense "before_destroy :check_games"
+    assert_model_offense "before_destroy :check_events"
     assert_model_offense "after_destroy :cleanup"
     assert_model_offense "around_destroy :instrument"
   end
@@ -66,8 +66,8 @@ class NoCallbacksTest < CopCase
 
   test "a model with no callbacks is accepted" do
     assert_model_clean <<~RUBY
-      belongs_to :club
-      has_many :games, dependent: :destroy
+      belongs_to :group
+      has_many :events, dependent: :destroy
 
       validates :email, presence: true
 
@@ -101,7 +101,7 @@ class NoCallbacksTest < CopCase
 
     def model(body)
       <<~RUBY
-        class Member < ApplicationRecord
+        class Person < ApplicationRecord
         #{body.indent(2)}
         end
       RUBY

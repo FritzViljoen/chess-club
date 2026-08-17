@@ -22,51 +22,51 @@ class NoNullableColumnsTest < CopCase
 
   test "timestamps are accepted, being NOT NULL already" do
     assert_table_clean "t.timestamps"
-    assert_migration_clean "add_timestamps :members"
+    assert_migration_clean "add_timestamps :people"
   end
 
   test "timestamps reopened as nullable are an offense" do
     assert_table_offense "t.timestamps null: true"
-    assert_migration_offense "add_timestamps :members, null: true"
-    assert_migration_clean "add_timestamps :members, null: false"
+    assert_migration_offense "add_timestamps :people, null: true"
+    assert_migration_clean "add_timestamps :people, null: false"
   end
 
   test "add_column is held to the same rule" do
-    assert_migration_offense "add_column :members, :surname, :string"
-    assert_migration_clean "add_column :members, :surname, :string, null: false"
+    assert_migration_offense "add_column :people, :surname, :string"
+    assert_migration_clean "add_column :people, :surname, :string, null: false"
   end
 
   test "redefining a column is held to the same rule" do
-    assert_migration_offense "change_column :members, :email, :text"
-    assert_migration_offense "change_column :members, :email, :text, null: true"
-    assert_migration_clean "change_column :members, :email, :text, null: false"
+    assert_migration_offense "change_column :people, :email, :text"
+    assert_migration_offense "change_column :people, :email, :text, null: true"
+    assert_migration_clean "change_column :people, :email, :text, null: false"
   end
 
   test "making an existing column nullable again is an offense" do
-    assert_migration_offense "change_column_null :members, :email, true"
+    assert_migration_offense "change_column_null :people, :email, true"
     assert_table_offense "t.change_null :email, true"
   end
 
   test "promoting a column to NOT NULL is accepted" do
-    assert_migration_clean "change_column_null :members, :email, false"
+    assert_migration_clean "change_column_null :people, :email, false"
     assert_table_clean "t.change_null :email, false"
   end
 
   test "a fill value does not disguise a promotion" do
-    assert_migration_clean 'change_column_null :members, :email, false, ""'
+    assert_migration_clean 'change_column_null :people, :email, false, ""'
   end
 
   test "the three steps in one method, in order, are accepted" do
     assert_migration_clean <<~RUBY
-      add_column :members, :email, :string
-      Member.update_all(email: "")
-      change_column_null :members, :email, false
+      add_column :people, :email, :string
+      Person.update_all(email: "")
+      change_column_null :people, :email, false
     RUBY
   end
 
   test "the three steps inside change_table are accepted" do
     assert_migration_clean <<~RUBY
-      change_table :members do |t|
+      change_table :people do |t|
         t.string :email
         t.change_null :email, false
       end
@@ -75,81 +75,81 @@ class NoNullableColumnsTest < CopCase
 
   test "a promotion before the column is added does not count" do
     assert_migration_offense <<~RUBY
-      change_column_null :members, :email, false
-      add_column :members, :email, :string
+      change_column_null :people, :email, false
+      add_column :people, :email, :string
     RUBY
   end
 
   test "a promotion in another method does not count" do
     assert_class_offense <<~RUBY
       def up
-        add_column :members, :email, :string
+        add_column :people, :email, :string
       end
 
       def down
-        change_column_null :members, :email, false
+        change_column_null :people, :email, false
       end
     RUBY
   end
 
   test "a promotion of some other column does not cover the new one" do
     assert_migration_offense <<~RUBY
-      add_column :members, :email, :string
-      change_column_null :members, :surname, false
+      add_column :people, :email, :string
+      change_column_null :people, :surname, false
     RUBY
   end
 
   test "a promotion on some other table does not cover the new column" do
     assert_migration_offense <<~RUBY
-      add_column :members, :email, :string
-      change_column_null :clubs, :email, false
+      add_column :people, :email, :string
+      change_column_null :groups, :email, false
     RUBY
   end
 
   test "a reference is held to the same rule" do
-    assert_table_offense "t.references :club"
-    assert_table_clean "t.references :club, null: false"
-    assert_migration_offense "add_reference :members, :club"
-    assert_migration_clean "add_reference :members, :club, null: false"
+    assert_table_offense "t.references :group"
+    assert_table_clean "t.references :group, null: false"
+    assert_migration_offense "add_reference :people, :group"
+    assert_migration_clean "add_reference :people, :group, null: false"
   end
 
   test "a reference is promoted under the column it really creates" do
     assert_migration_clean <<~RUBY
-      add_reference :members, :club
-      Member.update_all(club_id: 1)
-      change_column_null :members, :club_id, false
+      add_reference :people, :group
+      Person.update_all(group_id: 1)
+      change_column_null :people, :group_id, false
     RUBY
   end
 
   test "promoting a reference under its association name does not count" do
     assert_migration_offense <<~RUBY
-      add_reference :members, :club
-      change_column_null :members, :club, false
+      add_reference :people, :group
+      change_column_null :people, :group, false
     RUBY
   end
 
   test "a polymorphic reference needs both of its columns promoted" do
     assert_migration_clean <<~RUBY
-      add_reference :members, :owner, polymorphic: true
-      change_column_null :members, :owner_id, false
-      change_column_null :members, :owner_type, false
+      add_reference :people, :owner, polymorphic: true
+      change_column_null :people, :owner_id, false
+      change_column_null :people, :owner_type, false
     RUBY
 
     assert_migration_offense <<~RUBY
-      add_reference :members, :owner, polymorphic: true
-      change_column_null :members, :owner_id, false
+      add_reference :people, :owner, polymorphic: true
+      change_column_null :people, :owner_id, false
     RUBY
   end
 
   test "the reverse direction may restore a nullable column" do
     assert_class_clean <<~RUBY
       def up
-        add_column :members, :email, :string, null: false
+        add_column :people, :email, :string, null: false
       end
 
       def down
-        change_column_null :members, :email, true
-        remove_column :members, :email
+        change_column_null :people, :email, true
+        remove_column :people, :email
       end
     RUBY
   end
@@ -157,7 +157,7 @@ class NoNullableColumnsTest < CopCase
   test "a reversible block's down direction may restore a nullable column" do
     assert_migration_clean <<~RUBY
       reversible do |dir|
-        dir.down { change_column_null :members, :email, true }
+        dir.down { change_column_null :people, :email, true }
       end
     RUBY
   end
@@ -169,14 +169,14 @@ class NoNullableColumnsTest < CopCase
 
   test "promoting one column of a multi-column definition does not cover the rest" do
     assert_migration_offense <<~RUBY
-      change_table :members do |t|
+      change_table :people do |t|
         t.string :email, :nickname
         t.change_null :email, false
       end
     RUBY
 
     assert_migration_clean <<~RUBY
-      change_table :members do |t|
+      change_table :people do |t|
         t.string :email, :nickname
         t.change_null :email, false
         t.change_null :nickname, false
@@ -186,17 +186,17 @@ class NoNullableColumnsTest < CopCase
 
   test "promoting one column of a multi-reference does not cover the rest" do
     assert_migration_offense <<~RUBY
-      change_table :teams do |t|
-        t.references :club, :league
-        t.change_null :club_id, false
+      change_table :items do |t|
+        t.references :group, :category
+        t.change_null :group_id, false
       end
     RUBY
 
     assert_migration_clean <<~RUBY
-      change_table :teams do |t|
-        t.references :club, :league
-        t.change_null :club_id, false
-        t.change_null :league_id, false
+      change_table :items do |t|
+        t.references :group, :category
+        t.change_null :group_id, false
+        t.change_null :category_id, false
       end
     RUBY
   end
@@ -204,7 +204,7 @@ class NoNullableColumnsTest < CopCase
   test "a type argument is not mistaken for a second column" do
     assert_table_offense "t.column :email, :string"
     assert_migration_clean <<~RUBY
-      change_table :members do |t|
+      change_table :people do |t|
         t.column :email, :string
         t.change_null :email, false
       end
@@ -213,37 +213,37 @@ class NoNullableColumnsTest < CopCase
 
   test "a drop_table block describes the rollback and is left alone" do
     assert_migration_clean <<~RUBY
-      drop_table :members do |t|
+      drop_table :people do |t|
         t.string :email
-        t.integer :rating, null: false, default: 1200
+        t.integer :score, null: false, default: 1200
       end
     RUBY
   end
 
   test "a promotion in the reverse direction does not promote the forward one" do
     assert_migration_offense <<~RUBY
-      add_column :members, :handle, :string
+      add_column :people, :handle, :string
       reversible do |dir|
-        dir.down { change_column_null :members, :handle, false }
+        dir.down { change_column_null :people, :handle, false }
       end
     RUBY
   end
 
   test "a same-named method on another receiver is left alone" do
     assert_migration_clean "Kernel.string :email"
-    assert_migration_clean "helper.add_column :members, :surname, :string"
+    assert_migration_clean "helper.add_column :people, :surname, :string"
   end
 
   test "a local that is not the yielded table object is left alone" do
     assert_migration_clean <<~RUBY
       cutoff = Time.current
-      Member.where("created_at < ?", cutoff.change(hour: 0)).delete_all
+      Person.where("created_at < ?", cutoff.change(hour: 0)).delete_all
     RUBY
   end
 
   test "the table object is still recognised inside its own block" do
     assert_migration_offense <<~RUBY
-      change_table :members do |t|
+      change_table :people do |t|
         t.change :email, :text
       end
     RUBY

@@ -16,22 +16,22 @@ module RuboCop
       #
       # @example
       #   # bad
-      #   class Member < ApplicationRecord
+      #   class Person < ApplicationRecord
       #     before_save :normalize_email
       #     after_create_commit { Mailer.welcome(self).deliver_later }
       #   end
       #
       #   # good
-      #   class Member < ApplicationRecord
+      #   class Person < ApplicationRecord
       #     def normalize_email
       #       self.email = email.strip.downcase
       #     end
       #   end
       #
       #   # in the caller
-      #   member.normalize_email
-      #   member.save!
-      #   Mailer.welcome(member).deliver_later
+      #   person.normalize_email
+      #   person.save!
+      #   Mailer.welcome(person).deliver_later
       class NoCallbacks < Base
         MSG = "Remove `%<callback>s`. A callback hides work behind `save`, " \
               "where the caller cannot see it. Call a named method instead."

@@ -2,12 +2,15 @@ require "test_helper"
 require "rubocop"
 require_relative "../../../lib/rubocop/schema"
 require_relative "../../../lib/rubocop/model"
+require_relative "../../../lib/rubocop/vocabulary"
 
-# Base class for the schema-cop tests.
+# Base class for the house-cop tests.
 #
 # A subclass names its cop with `polices`, then asserts on a fragment of
 # migration source: `table` wraps it in a `create_table` block, `migration`
-# uses it as the migration body as written.
+# uses it as the migration body as written. A cop that reads somewhere other
+# than db/migrate says so with `on_path`, and one that takes settings from
+# .rubocop.yml declares them with `configured`.
 class CopCase < ActiveSupport::TestCase
   # Both cops only look at migrations, and rubocop-rails silently skips
   # offenses in any file whose timestamp is at or below `MigratedSchemaVersion`
@@ -18,6 +21,8 @@ class CopCase < ActiveSupport::TestCase
   # The path rubocop is told the source came from. Cops scoped to somewhere
   # other than db/migrate say so with `on_path`.
   class_attribute :source_path, default: MIGRATION_PATH
+  # Cop settings that would come from .rubocop.yml, beyond `Enabled`.
+  class_attribute :cop_settings, default: {}
 
   def self.polices(cop_class)
     self.cop_class = cop_class
@@ -25,6 +30,10 @@ class CopCase < ActiveSupport::TestCase
 
   def self.on_path(path)
     self.source_path = path
+  end
+
+  def self.configured(settings)
+    self.cop_settings = settings
   end
 
   private
@@ -63,7 +72,8 @@ class CopCase < ActiveSupport::TestCase
     end
 
     def offenses(source)
-      config = RuboCop::Config.new({ cop_class.badge.to_s => { "Enabled" => true } },
+      config = RuboCop::Config.new(
+        { cop_class.badge.to_s => { "Enabled" => true }.merge(cop_settings) },
         Rails.root.join(".rubocop.yml").to_s)
       processed = RuboCop::ProcessedSource.new(source, RUBY_VERSION.to_f, source_path)
 
@@ -72,7 +82,7 @@ class CopCase < ActiveSupport::TestCase
 
     def table(line)
       migration(<<~RUBY)
-        create_table :members do |t|
+        create_table :people do |t|
         #{line.indent(2)}
         end
       RUBY

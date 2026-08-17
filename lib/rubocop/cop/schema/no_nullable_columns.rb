@@ -30,21 +30,21 @@ module RuboCop
       #   # bad
       #   t.string :email
       #   t.string :email, null: true
-      #   add_column :members, :email, :string
-      #   change_column_null :members, :email, true
-      #   change_column :members, :email, :text
+      #   add_column :people, :email, :string
+      #   change_column_null :people, :email, true
+      #   change_column :people, :email, :text
       #   t.timestamps null: true
       #
       #   # good
       #   t.string :email, null: false
-      #   add_column :members, :email, :string, null: false
-      #   change_column :members, :email, :text, null: false
+      #   add_column :people, :email, :string, null: false
+      #   change_column :people, :email, :text, null: false
       #   t.timestamps
       #
       #   # good — the three steps, in one method, in order
-      #   add_column :members, :email, :string
-      #   Member.update_all(email: "")
-      #   change_column_null :members, :email, false
+      #   add_column :people, :email, :string
+      #   Person.update_all(email: "")
+      #   change_column_null :people, :email, false
       class NoNullableColumns < Base
         include ColumnDefinition
 
@@ -112,7 +112,7 @@ module RuboCop
             !pair.nil? && !pair.value.false_type?
           end
 
-          # `change_column_null :members, :email, false` — the promotion this
+          # `change_column_null :people, :email, false` — the promotion this
           # cop wants. Anything else is a column going nullable.
           def promotion?(node)
             value_argument(node)&.false_type? || false

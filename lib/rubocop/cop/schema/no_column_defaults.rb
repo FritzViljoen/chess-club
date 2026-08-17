@@ -19,16 +19,16 @@ module RuboCop
       #
       # @example
       #   # bad
-      #   t.integer :games_played, null: false, default: 0
-      #   change_column :members, :games_played, :integer, default: 0
-      #   change_column_default :members, :games_played, from: nil, to: 0
-      #   t.change_default :games_played, 0
+      #   t.integer :attempts, null: false, default: 0
+      #   change_column :people, :attempts, :integer, default: 0
+      #   change_column_default :people, :attempts, from: nil, to: 0
+      #   t.change_default :attempts, 0
       #
       #   # good
-      #   t.integer :games_played, null: false
+      #   t.integer :attempts, null: false
       #   t.timestamps
-      #   change_column_default :members, :games_played, from: 0, to: nil
-      #   t.change_default :games_played, nil
+      #   change_column_default :people, :attempts, from: 0, to: nil
+      #   t.change_default :attempts, nil
       class NoColumnDefaults < Base
         include ColumnDefinition
 
@@ -53,7 +53,7 @@ module RuboCop
         end
 
         private
-          # `change_column_default :members, :x, from: 0, to: nil` and
+          # `change_column_default :people, :x, from: 0, to: nil` and
           # `t.change_default :x, nil` both take a default away.
           def removes_default?(node)
             to = column_option(node, :to)
