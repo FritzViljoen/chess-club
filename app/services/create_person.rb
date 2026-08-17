@@ -12,6 +12,8 @@ class CreatePerson < Service
 
     ApplicationRecord.transaction do
       raise ActiveRecord::Rollback unless person.save
+
+      RecalculateStandings.call
     end
 
     person

@@ -12,6 +12,8 @@ class UpdateContest < Service
       replace_results
 
       raise ActiveRecord::Rollback unless @contest.save
+
+      RecalculateStandings.call
     end
 
     @contest

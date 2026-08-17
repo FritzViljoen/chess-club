@@ -1,7 +1,7 @@
 # app/models
 
 Records, and the rules that belong to a single record. Also the plain objects the
-domain passes around: `Page`, `Listing`, `SearchTerm`.
+domain passes around: `Page`, `Ladder`, `Standing`, `Listing`, `SearchTerm`.
 
 ## True of every file here
 
