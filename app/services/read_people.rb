@@ -36,9 +36,9 @@ class ReadPeople < Service
       offset = Page.offset_for(number)
 
       found
-        .left_joins(:contest_results)
+        .left_joins(:contest_results, :standing_cache)
         .group(:id)
-        .select("people.*, COUNT(contest_results.id) AS contest_results_count")
+        .select("people.*, COUNT(contest_results.id) AS contest_results_count, MAX(standings_cache.position) AS position")
         .order(order)
         .limit(Page::SIZE)
         .offset(offset)

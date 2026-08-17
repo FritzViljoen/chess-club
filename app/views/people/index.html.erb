@@ -12,6 +12,7 @@
   <table>
     <thead>
       <tr>
+        <th class="position">Rank</th>
         <th><%= render "sort_header", key: "name", label: "Player", listing: @listing %></th>
         <th>Email</th>
         <th><%= render "sort_header", key: "joined", label: "Joined", listing: @listing %></th>
@@ -22,6 +23,7 @@
     <tbody>
       <% @page.rows.each do |person| %>
         <tr>
+          <td class="position"><%= person.position %></td>
           <td class="who"><%= link_to person.full_name, person %></td>
           <td class="quiet fill"><%= person.email %></td>
           <td class="quiet when"><%= person.joined_on.strftime("%-d %b %Y") %></td>

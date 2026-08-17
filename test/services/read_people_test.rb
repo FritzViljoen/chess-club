@@ -105,7 +105,33 @@ class ReadPeopleTest < ActiveSupport::TestCase
     end
   end
 
+  test "carries each player's rank from the cache, in one query" do
+    late = create("Late", "Joiner", joined_on: Date.new(2026, 6, 1))
+    early = create("Early", "Bird", joined_on: Date.new(2026, 1, 1))
+
+    rows = nil
+    queries = count_queries { rows = read.rows }
+
+    assert_equal({ early.id => 1, late.id => 2 }, rows.to_h { |person| [ person.id, person.position ] })
+    assert_equal 2, queries, "expected the count and the page, and no query per row"
+  end
+
+  test "a player the cache does not hold has no rank rather than no row" do
+    person = create("Un", "Ranked")
+    StandingsCache.delete_all
+
+    assert_nil read.rows.sole.position, "expected the left join to keep the row"
+  end
+
   private
+    def count_queries
+      queries = 0
+      counter = ->(*, payload) { queries += 1 unless payload[:name].in?([ "SCHEMA", "TRANSACTION" ]) }
+
+      ActiveSupport::Notifications.subscribed(counter, "sql.active_record") { yield }
+      queries
+    end
+
     def read(sort: "name", page: 1, query: "")
       ReadPeople.call(sort: sort, page: page, query: query)
     end
