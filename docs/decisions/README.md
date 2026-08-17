@@ -35,5 +35,7 @@ amended by a decision that names the law it changes.
 | [`a-service-answers-with-what-it-made`](a-service-answers-with-what-it-made.md) | Every service answers with the thing itself, not an envelope |
 | [`untrusted-input-is-parsed-at-the-seam`](untrusted-input-is-parsed-at-the-seam.md) | Request input is parsed by `TypedParams`, at the seam, and nowhere else |
 | [`a-time-names-its-zone`](a-time-names-its-zone.md) | A time value names the zone it is in; nothing reads an ambient one |
+| [`positions-are-derived-from-a-log`](positions-are-derived-from-a-log.md) | A position is derived from the contest log, never stored and moved |
 | [`a-contest-holds-results`](a-contest-holds-results.md) | A contest holds a collection of results, not two participant columns |
+| [`the-brief-is-silent-at-two-edges`](the-brief-is-silent-at-two-edges.md) | Where the brief says nothing, the code still has one answer |
 | [`email-identifies-a-person`](email-identifies-a-person.md) | Email is how a person is identified, so it is required and unique |

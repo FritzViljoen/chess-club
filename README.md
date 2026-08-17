@@ -32,9 +32,11 @@ domain, screens, documents — rather than left in the order they happened, so t
 history reads as an argument instead of a diary. The reasoning that a
 chronological history would have shown lives in
 [`docs/decisions/`](docs/decisions/) instead: each record states what was
-decided, what the alternatives were, and what the choice costs. Start with
-[`email-identifies-a-person`](docs/decisions/email-identifies-a-person.md) and
-[`a-service-answers-with-what-it-made`](docs/decisions/a-service-answers-with-what-it-made.md).md).
+decided, what the alternatives were, and what the choice costs. The two the
+brief provoked directly are
+[`positions-are-derived-from-a-log`](docs/decisions/positions-are-derived-from-a-log.md)
+and
+[`the-brief-is-silent-at-two-edges`](docs/decisions/the-brief-is-silent-at-two-edges.md).
 
 ## Requirements
 
