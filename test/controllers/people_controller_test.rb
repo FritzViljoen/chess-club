@@ -90,6 +90,26 @@ class PeopleControllerTest < ActionDispatch::IntegrationTest
     assert_select "td", text: "Ann Baker"
   end
 
+  test "the grid shows each player's current rank" do
+    post people_path, params: attributes
+    post people_path, params: attributes(name: "Zaan", surname: "Zulu", email: "z@example.test", joined_on: "2026-02-01")
+
+    get people_path
+
+    assert_select "td.position", text: "1"
+    assert_select "td.position", text: "2"
+  end
+
+  test "the record shows the rank the board holds" do
+    post people_path, params: attributes
+    person = Person.sole
+
+    get person_path(person)
+
+    assert_select "dt", text: "Current rank"
+    assert_select "dd", text: person.standing_cache.position.to_s
+  end
+
   private
     def attributes(**overrides)
       {
