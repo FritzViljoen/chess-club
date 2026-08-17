@@ -13,8 +13,7 @@ strongest player; recording a result updates the standings.
 | Why a specific decision was made | [`docs/decisions/`](docs/decisions/) |
 
 Folder-level notes live beside the code: [`app/`](app/README.md),
-[`db/`](db/README.md), [`lib/rubocop/`](lib/rubocop/README.md),
-[`test/`](test/README.md).
+[`db/`](db/README.md), [`lib/`](lib/README.md), [`test/`](test/README.md).
 
 ## Requirements
 
