@@ -271,8 +271,12 @@ them to `CalculateStandings` and passes the answer to `WriteStandingsCache` — 
 inside one transaction, because a half-applied shuffle is worse than a refused
 one.
 
-`ReadStandings` answers with the ordered rows for the view, reading
-`standings_cache` and nothing else.
+`RecalculateStandings` is the one caller that runs both steps, so a write service
+says what it wants rather than repeating the sequence. `ReadStandings` answers
+with the ordered rows for the view, reading `standings_cache` and nothing else.
+
+`LocalZone` names the zone, as an IANA string, in one place. Both the contest
+validation and the seam read it; nothing reads an ambient `Time.zone`.
 
 No model registers a callback, per
 [`no-lifecycle-callbacks`](../decisions/no-lifecycle-callbacks.md). The recompute
@@ -308,8 +312,9 @@ count is a second answer that can disagree with the log.
   design exists for.
 - A correction test edits a contest in the middle of a log and asserts the later
   positions moved with it.
-- System tests cover the three flows: add a person, record a contest, read the
-  standings.
+- Integration tests cover the three flows end to end: add a person, record a
+  contest, read the standings. They also cover the seam — a date or time the
+  parsers cannot read bounces the request and stores nothing.
 
 ---
 
