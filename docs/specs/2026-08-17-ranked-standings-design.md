@@ -71,7 +71,7 @@ Every column is `NOT NULL` with no database default, per
 | --- | --- | --- |
 | `name` | string | |
 | `surname` | string | |
-| `email` | string | unique index, partial: `WHERE email != ''` |
+| `email` | string | unique index; required, and how a person is identified |
 | `born_on` | date | the brief's "birthday" |
 | `joined_on` | date | entered on the form |
 
@@ -79,13 +79,13 @@ Every column is `NOT NULL` with no database default, per
 rather than read off `created_at` — otherwise the starting order would depend on
 when a row happened to be typed in.
 
-**Email is optional but never absent.** No column here is nullable, so somebody
-without an email has `''` and not `NULL` — there is one way to say "no email"
-rather than two that every reader has to tell apart. That makes a plain unique
-index wrong: it would allow one person without an email and refuse the second.
-The index is partial, `WHERE email != ''`, so the rule is what it means — unique
-among the people who have one. The empty string is the model's starting value,
-because no column carries a database default.
+**Email identifies a person from outside this database.** The brief gives no
+number to use instead, and `id` is an implementation detail nobody outside would
+think to quote — so email is required and unique, and the unique index is what
+makes that true rather than the validation. URLs still route on `id`: an address
+gets corrected, and a link that breaks when it does is worse than an opaque one.
+See [`email-identifies-a-person`](../decisions/email-identifies-a-person.md),
+which supersedes an earlier ruling that email was optional.
 
 ### `contests`
 
@@ -271,8 +271,12 @@ them to `CalculateStandings` and passes the answer to `WriteStandingsCache` — 
 inside one transaction, because a half-applied shuffle is worse than a refused
 one.
 
-`ReadStandings` answers with the ordered rows for the view, reading
-`standings_cache` and nothing else.
+`RecalculateStandings` is the one caller that runs both steps, so a write service
+says what it wants rather than repeating the sequence. `ReadStandings` answers
+with the ordered rows for the view, reading `standings_cache` and nothing else.
+
+`LocalZone` names the zone, as an IANA string, in one place. Both the contest
+validation and the seam read it; nothing reads an ambient `Time.zone`.
 
 No model registers a callback, per
 [`no-lifecycle-callbacks`](../decisions/no-lifecycle-callbacks.md). The recompute
@@ -308,8 +312,9 @@ count is a second answer that can disagree with the log.
   design exists for.
 - A correction test edits a contest in the middle of a log and asserts the later
   positions moved with it.
-- System tests cover the three flows: add a person, record a contest, read the
-  standings.
+- Integration tests cover the three flows end to end: add a person, record a
+  contest, read the standings. They also cover the seam — a date or time the
+  parsers cannot read bounces the request and stores nothing.
 
 ---
 

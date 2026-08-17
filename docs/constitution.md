@@ -85,26 +85,30 @@ assertion, and `typed(on, Date)` would stop being greppable.
 - **Decision:**
   [`arguments-are-typed-at-construction.md`](decisions/arguments-are-typed-at-construction.md)
 
-## `a-service-returns-a-result` — Every service answers with a result
+## `a-service-answers-with-what-it-made` — Every service answers with the thing itself
 
-`Service#call` returns a `Result` — `success(value)` or `failure(:code)` — and
-`Service.call` raises `TypeError` on anything else. A refusal is a code the
-caller can handle; a defect raises and is nobody's error message.
+`Service#call` returns the record it wrote, the rows it read, or the value it
+worked out. There is no envelope: no caller unwraps, and an empty answer is an
+answer.
 
-A service that reads answers `success(rows)`, the same as one that writes. There
-is one shape, so a caller never has to know which kind it is holding, and an
-empty answer is an answer rather than a refusal.
+**A write answers with its record, and the record carries whether it was
+accepted** — `person.errors.none?`. That is the same question for a create and
+for an update, it is the object the form is about to render anyway, and it needs
+no second vocabulary of codes to keep in step with the validations.
+
+**A defect raises.** `typed` raises on a caller's mistake and `destroy!` raises on
+a broken invariant; nothing rescues either into a value.
 
 Reading and writing are separate services all the same. One operation per class,
 and no flag deciding which of the two a call is doing.
 
-- **Principle:** `nothing-fails-quietly`, `one-way-to-say-each-thing`
-- **Guard:** `Service.call` itself, which raises rather than passing on whatever
-  `call` evaluated to. Tested in both directions.
-- **Guard's limit:** nothing checks that a reading service does not write, or
-  that a service does only one thing. That is review's.
+- **Principle:** `one-way-to-say-each-thing`
+- **Guard:** none. Nothing checks what an arbitrary `call` returns, and the
+  previous law's `TypeError` only checked the wrapper's *shape*, never that the
+  value inside was right. Held by review and by each service's own test.
 - **Decision:**
-  [`a-service-returns-a-result.md`](decisions/a-service-returns-a-result.md)
+  [`a-service-answers-with-what-it-made.md`](decisions/a-service-answers-with-what-it-made.md),
+  superseding `a-service-returns-a-result`
 
 ## `untrusted-input-is-parsed-at-the-seam` — Request input is parsed by `TypedParams`, at the seam, and nowhere else
 
@@ -133,6 +137,24 @@ plain 400 for anything else.
   it. Neither does it see a parse of a local assigned from `params` earlier.
 - **Decision:**
   [`untrusted-input-is-parsed-at-the-seam.md`](decisions/untrusted-input-is-parsed-at-the-seam.md)
+
+## `a-parameter-is-parsed-before-it-reaches-a-record` — A request value goes through `TypedParams` before any lookup or write
+
+`Person.find(params[:id])` works, which is the trap: Active Record coerces the
+string, so `/people/1abc` serves person 1 and nothing anywhere fails. The parsers
+refuse it — but nothing forces them to be called, and a seam cannot defend a door
+nobody opened.
+
+- **Principle:** `nothing-fails-quietly`, `make-the-wrong-thing-impossible`
+- **Guard:** `Controller/NoUnparsedLookup`, over `app/controllers/**/*.rb`. Fails
+  CI. It flags a value derived from `params` — as an argument, inside a hash, or
+  nested any depth down — reaching `find`, `find_by`, `where`, `new`, `create`,
+  `update`, `exists?` and their bang and `find_or_*` siblings. A `*_params`
+  helper counts as `params`, so one extraction does not hide the value.
+- **Guard's limit:** the method list is closed, so a finder it does not name is
+  not covered; the `params` must be reached syntactically inside the call, so a
+  local assigned earlier is invisible; and it sees only controllers, because
+  that is the one place raw `params` exists.
 
 ## `a-time-names-its-zone` — A time value names the zone it is in; nothing reads an ambient one
 
