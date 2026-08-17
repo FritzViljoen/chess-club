@@ -6,9 +6,6 @@ club's strongest player; recording a game updates the standings.
 
 ## Documentation
 
-[`docs/`](docs/) holds the written record — how the code is built, the rules it
-obeys, and why each was chosen.
-
 | If you want | Read |
 |---|---|
 | How the code is built | [`docs/principles.md`](docs/principles.md) |

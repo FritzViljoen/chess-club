@@ -66,8 +66,6 @@ closes the gap.
 - **Principle:** `the-schema-states-the-invariant`
 - **Guard:** a unique index on `rank`, plus a test asserting the sequence is a
   permutation of `1..n` after every operation.
-- **Decision:**
-  [`ranks-are-a-dense-unique-sequence.md`](decisions/ranks-are-a-dense-unique-sequence.md)
 
 ## `a-game-is-recorded-in-one-transaction` — Recording a game is all-or-nothing
 
@@ -98,7 +96,6 @@ drift.
 
 - **Principle:** `one-way-to-say-each-thing`
 - **Guard:** the workflow's only step is `bin/ci`.
-- **Decision:** [`ci-is-one-command.md`](decisions/ci-is-one-command.md)
 
 ## `plain-words-in-code` — Identifiers use plain words
 

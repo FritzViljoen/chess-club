@@ -58,8 +58,8 @@ gets the constraint either way.
 
 - Every model attribute is present. No `email.presence`, no `&.`, no "unknown"
   branch that exists only because the column allowed it.
-- Engine-copied migrations are exempt; see
-  [`engine-migrations-are-not-ours-to-edit`](engine-migrations-are-not-ours-to-edit.md).
+- Migrations copied in from an engine are exempt. They are not ours to edit, so
+  holding them to a house rule would only ever mean a red build.
 - The cop covers alteration as well as creation, resolves a reference to the
   `_id` column it really creates, and exempts a migration's reverse direction —
   each of those is a hole a review found and closed.

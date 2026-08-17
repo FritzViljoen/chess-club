@@ -34,8 +34,7 @@ reversible `up`/`down` pair is written as normal.
 **A file with a dotted name is not ours.**
 `…_create_active_storage_tables.active_storage.rb` and its like are copied in by an
 engine and excluded from the cops: editing one diverges from the engine, and leaving
-it unexcluded would keep the build red forever
-([`engine-migrations-are-not-ours-to-edit`](../../docs/decisions/engine-migrations-are-not-ours-to-edit.md)).
+it unexcluded would keep the build red forever.
 
 **A timestamp at or below `19700101000000` disables every cop for that file.** That
 is rubocop-rails' "already migrated" sentinel. A migration named that way reads as a
