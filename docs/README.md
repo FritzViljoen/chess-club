@@ -49,6 +49,16 @@ adds a new decision rather than rewriting the old one — the record of why a ro
 was closed is what stops it being walked again. The principles, the constitution
 and the reference docs are corrected in place to match reality.
 
+## Folder documentation
+
+A folder's `README.md` says what that folder is, and then **states only facts that
+hold for every file in it and in all of its subfolders**. A rule that binds part of
+the tree goes in that part's own README, not the parent's — which is why the
+migration rules are in `db/migrate/` and not in `db/`.
+
+Nothing domain-specific belongs in a folder document. What the application does is
+described in [`domain/`](domain/), once.
+
 ## A note on `CLAUDE.md` files
 
 Most folders here carry both a `README.md` and a `CLAUDE.md`. The README is for a

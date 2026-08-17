@@ -1,46 +1,26 @@
-# Application
+# app
 
-Server-rendered ERB with the Rails 8 defaults — Propshaft, importmap, Turbo. No
-separate front end and no build step.
+The application. Server-rendered ERB on the Rails 8 defaults — Propshaft,
+importmap, Turbo. No separate front end and no build step.
 
-## Screens
+What the application does is described in
+[`../docs/domain/`](../docs/domain/). Rules that bind only part of this tree live
+in that part's own README.
 
-| Route | Shows |
-|---|---|
-| `/` | The standings: every member in rank order |
-| `/members` | Member list, with new, edit and delete |
-| `/games/new` | Record a game: two members and one of three results |
+## True of every file here
 
-The standings are the root because they are what the club looks at.
+**Zeitwerk autoloads this tree.** A file's path is its constant name, so
+`app/x/y_z.rb` defines `X::YZ` and nothing else. Renaming a file renames a
+constant.
 
-## Where the rules live
+**Identifiers use plain words**, never the vocabulary of the game — no `Match`, no
+`draw`, no leaderboard, no "upset"
+([`plain-words-in-code`](../docs/decisions/plain-words-in-code.md)).
 
-**Not in a controller and not in a model callback.** One plain object owns the
-ranking rules (constitution → `the-ranking-rules-live-in-one-object`): it takes the
-current standings and a result and returns the ranks that changed. It runs no
-queries. A second object applies the result — persisting the game, writing the new
-ranks, incrementing both members' game counts — in one transaction
-(constitution → `a-game-is-recorded-in-one-transaction`).
+**One way to say each thing.** Repeating an identical shape is fine; a second
+spelling of the same operation is the defect, because every rule about that
+operation then has to know both (principle → `one-way-to-say-each-thing`).
 
-A controller collects input and calls that. If a rank is being computed anywhere
-else, that is the defect.
-
-The rules themselves are in [`../docs/domain/ranking.md`](../docs/domain/ranking.md).
-
-## Naming
-
-`Member`, `Game`, `standings`, `tie`. Plain words, not the vocabulary of the game
-([`plain-words-in-code`](../docs/decisions/plain-words-in-code.md)) — so no `Match`,
-no `draw`, no leaderboard, and the case where the weaker member wins is named for
-what it is.
-
-## Models hold defaults, the schema does not
-
-No column carries a database default
-(constitution → `no-database-defaults`), so a starting value — a new member's game
-count, their rank at `n + 1` — is decided in the model, where a reader and a test
-can both see it.
-
-Every attribute is present. No column in this schema is nullable
-(constitution → `no-nullable-columns`), so there are no nil branches to write and
-none should appear.
+**Nothing fails quietly.** No rescue that swallows, no branch that returns a
+plausible default instead of saying it could not do the work
+(principle → `nothing-fails-quietly`).

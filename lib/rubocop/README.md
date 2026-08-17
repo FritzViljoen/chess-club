@@ -1,64 +1,42 @@
-# Schema cops
+# lib/rubocop
 
-House RuboCop cops that hold the schema laws. Two of them, both over
-`db/migrate`, both failing CI.
+House RuboCop cops — the guards that hold the laws a machine can check. Every cop
+here fails CI, so a rule that lives in this folder is enforced rather than
+remembered (principle → `make-the-wrong-thing-impossible`).
 
-| Cop | Law |
-|---|---|
-| `Schema/NoNullableColumns` | constitution → `no-nullable-columns`, `a-nullable-column-lives-inside-one-migration` |
-| `Schema/NoColumnDefaults` | constitution → `no-database-defaults` |
+What each cop forbids is documented at the top of that cop's own file, and why it
+exists is in [`../../docs/decisions/`](../../docs/decisions/).
 
-Each cop's own file carries the full rule and its examples. Start there;
-[`../../docs/decisions/no-nullable-columns.md`](../../docs/decisions/no-nullable-columns.md)
-and [`no-database-defaults.md`](../../docs/decisions/no-database-defaults.md) carry
-the reasoning.
+## True of every file here
 
-## Layout
+**One folder per subject, one cop per file, one loader per folder.** `<subject>.rb`
+requires everything in `cop/<subject>/`. `.rubocop.yml` requires the loaders, never
+the cops, so adding a cop needs no change to a loader — only its own `Enabled` and
+`Include` entry in the config.
 
-- `schema.rb` — the loader. `.rubocop.yml` requires this one file; it requires the
-  shared module and then globs the cops, so a new cop needs no config change.
-- `cop/schema/column_definition.rb` — shared recognition of the migration calls
-  that decide nullability or a default. Both cops include it.
-- `cop/schema/*.rb` — one cop per file.
+**The namespace names the subject, not this application.** `Schema`, `Model` — never
+the name of the app. These rules are about Rails and about databases; nothing in
+them is specific to a chess club (constitution → `plain-words-in-code`).
 
-The namespace is `Schema`, not the app's name: these rules are about schemas and
-nothing about this club (constitution → `plain-words-in-code`).
+**A cop's file is its documentation.** The rule, the reason for it, and an
+`@example` block showing the bad and good forms all sit at the top of the cop. A
+rule that cannot be stated in a paragraph there is more than one rule.
 
-## What the shared module knows
+**Recognition shared by two cops lives in the subject's module**, never copied
+between them (principle → `one-decision-one-place`).
 
-Every relevant migration call is one of five kinds — a column is created, a column
-is redefined, only its nullability changes, only its default changes, or it is
-`timestamps`. Each kind comes in two forms, called on the table object inside a
-`create_table` / `change_table` block or called on the migration itself. The module
-classifies a call, extracts its options, resolves the `[ table, column ]` it
-touches, and answers whether the call sits in a migration's reverse direction.
+**Every cop is tested in both directions** — it flags the bad form *and* accepts the
+good one. A cop tested only on offenses passes just as well once it has stopped
+matching anything (principle → `make-the-wrong-thing-impossible`). Tests are in
+[`../../test/lib/rubocop/`](../../test/lib/rubocop/).
 
-Three of those are less obvious than they sound, and each exists because a review
-found a hole:
+**Scope is configuration, not code.** Where a cop applies is an `Include` in
+`.rubocop.yml`; a path check inside the cop is not how it is done.
 
-- **A reference names an association, not a column.** `add_reference :members,
-  :club` creates `club_id`, so identity resolves to `club_id` — and to
-  `club_type` as well when the reference is polymorphic.
-- **The reverse direction is exempt.** `down` restores the previous schema, which
-  is the state these cops forbid. Without the exemption a reversible migration
-  cannot be written.
-- **Scope is the enclosing method, in source order.** A promotion in `down` must
-  not license a nullable column in `up`, and one written above the `add_column`
-  must not license the column below it.
+**Never define a method that `RuboCop::Cop::Base` already defines.** `options` is
+the one that bites: shadowing it makes every offense vanish with no error.
 
-## Tests
-
-`test/lib/rubocop/`. `cop_case.rb` is the shared base: a subclass names its cop
-with `polices`, then asserts on a fragment wrapped as a migration.
-
-One trap worth knowing. rubocop-rails silently skips offenses in any migration
-whose timestamp is at or below `AllCops: MigratedSchemaVersion`, which defaults to
-the UNIX epoch, `19700101000000`. A test fixture or probe migration named with
-that exact timestamp is invisible to every cop and looks like a passing file. The
-test base class uses a plausible timestamp for this reason.
-
-## Not loaded by the app
-
-`lib/rubocop` is excluded from `config.autoload_lib`. The cops live under the
-`RuboCop` namespace, which Zeitwerk reads as `Rubocop` and refuses to load, and
-they have no business inside the running app in any case.
+**This folder is not autoloaded.** `lib/rubocop` is excluded from
+`config.autoload_lib` — the cops live under the `RuboCop` namespace, which Zeitwerk
+reads as `Rubocop` and refuses to load, and they have no business inside the running
+app.
