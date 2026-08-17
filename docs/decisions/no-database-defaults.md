@@ -8,8 +8,8 @@
 
 ## Context
 
-`t.integer :games_played, null: false, default: 0` is the ordinary way to give a
-counter a starting value. It is also a second place that decides what a new
+`t.integer :visits, null: false, default: 0` is the ordinary way to give a counter
+a starting value. It is also a second place that decides what a new
 row's counter starts at. The model says one thing — or says nothing, and inherits
 the schema's answer without saying so — and the database says another.
 
@@ -30,8 +30,7 @@ existing table.
 ## Rationale
 
 A default is invisible at the call site. Reading `Person.create!(name: "…")` tells
-you nothing about what `games_played` will be; you have to go and read the
-schema, and the schema is the one file nobody reads before writing a create.
+you nothing about what `visits` will be; you have to go and read the schema, and the schema is the one file nobody reads before writing a create.
 Putting the value in the model puts it where the reader already is, and where a
 test can assert it.
 

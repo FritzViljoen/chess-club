@@ -14,7 +14,8 @@ requires everything in `cop/<subject>/`. `.rubocop.yml` requires the loaders, ne
 the cops, so adding a cop needs no change to a loader — only its own `Enabled` and
 `Include` entry in the config.
 
-**The namespace names the subject, not this application.** `Schema`, `Model` — never
+**The namespace names the subject, not this application.** `Schema`, `Model`,
+`Vocabulary` — never
 the name of the app. These rules are about Rails and about databases; nothing in
 them is specific to a chess club (constitution → `plain-words-in-code`).
 
@@ -33,8 +34,13 @@ matching anything (principle → `make-the-wrong-thing-impossible`). Tests are i
 **Scope is configuration, not code.** Where a cop applies is an `Include` in
 `.rubocop.yml`; a path check inside the cop is not how it is done.
 
-**Never define a method that `RuboCop::Cop::Base` already defines.** `options` is
-the one that bites: shadowing it makes every offense vanish with no error.
+**Never define a method that `RuboCop::Cop::Base` already defines.** A cop is a
+subclass, so a private helper silently replaces the framework's method of the same
+name and the failure has no error attached to it. `relevant_file?`,
+`excluded_file?`, `message` and `cop_config` are the ones within reach of a helper
+you would plausibly write. Check with
+`RuboCop::Cop::Base.private_instance_methods(true).include?(:name)` before adding
+one.
 
 **This folder is not autoloaded.** `lib/rubocop` is excluded from
 `config.autoload_lib` — the cops live under the `RuboCop` namespace, which Zeitwerk

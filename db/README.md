@@ -8,13 +8,12 @@ The rules that bind a migration are in
 
 ## True of every file here
 
-**`schema.rb` is generated. Never hand-edit it.** It is the output of running the
-migrations, so a change made here is lost the next time they run. To change the
-schema, write a migration.
+**No database file lives here.** They are `storage/*.sqlite3`, and `/storage/*` is
+ignored. Everything in this folder is checked in and reviewed like any other code.
 
-**Everything in this folder is checked in except the database file itself.** The
-`.sqlite3` files are ignored; migrations, `schema.rb` and `seeds.rb` are reviewed
-like any other code.
+**`schema.rb` is generated. Never hand-edit it.** It appears once a migration has
+been run, as the output of running them, so a change made to it is lost the next
+time they run. To change the schema, write a migration.
 
 **An invariant belongs in the schema.** If a value must be unique, the index is
 unique; if it must exist, the column is NOT NULL. A model validation cannot see a

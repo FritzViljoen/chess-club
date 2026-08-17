@@ -5,7 +5,11 @@ alongside everything else the build runs.
 
 ## True of every file here
 
-**The tree mirrors what it tests.** A test for `x/y.rb` is at `test/x/y_test.rb`.
+**A test's path mirrors its subject's constant, not its subject's path.**
+`Person` lives at `test/models/person_test.rb`. `RuboCop::Cop::Schema::NoCallbacks`
+lives at `test/lib/rubocop/schema/no_callbacks_test.rb` — the `cop/` segment in
+`lib/rubocop/cop/schema/` is RuboCop's required layout, not part of the name, so it
+does not appear here.
 
 **A guard needs a test that proves it fires.** Delete the guard and the test must go
 red; one that passes either way is coverage in name only

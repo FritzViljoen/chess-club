@@ -52,8 +52,8 @@ The remaining gap is a promotion inside a conditional that never runs
 (`if false`). It is accepted: no author writes that except to defeat the cop, and
 anyone willing to do that has `rubocop:disable` available anyway.
 
-A reference needed special handling. `add_reference :people, :club` creates
-`club_id`, so the promotion must name `club_id` — the cop resolves the identity to
+A reference needed special handling. `add_reference :people, :organisation` creates
+`organisation_id`, so the promotion must name `organisation_id` — the cop resolves the identity to
 the column that really exists, and a polymorphic reference requires both `_id`
 and `_type` to be promoted.
 

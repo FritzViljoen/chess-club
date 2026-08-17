@@ -1,7 +1,10 @@
 # db/migrate
 
-Migrations. Two house rules bind every one of them, both enforced by cops in
-[`../../lib/rubocop/`](../../lib/rubocop/README.md), both failing CI.
+Migrations. Three cops in [`../../lib/rubocop/`](../../lib/rubocop/README.md) bind
+every one of them and all three fail CI: the two schema rules below, and
+`Vocabulary/BannedTerms`, which covers `db/**/*.rb` and rejects any industry term in
+the list in `.rubocop.yml`. **Read that list before naming a table or a column** —
+the examples below use deliberately neutral names for that reason.
 
 ## True of every migration here
 
@@ -24,8 +27,8 @@ change_column_null :people, :email, false
 
 The promotion must come *later in the same method*. One in `down` promotes nothing
 on the way forward; one written above the `add_column` runs before the column
-exists. Promote the column that really exists — `add_reference :people, :club`
-creates `club_id`, and a polymorphic reference creates `club_type` too.
+exists. Promote the column that really exists — `add_reference :people, :organisation`
+creates `organisation_id`, and a polymorphic reference creates `organisation_type` too.
 
 **The reverse direction is exempt from both rules.** Restoring a nullable column or
 putting a default back is what reversing means, so `down` may do either and a

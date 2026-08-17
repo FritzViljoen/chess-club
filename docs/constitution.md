@@ -57,9 +57,6 @@ invokes.
 - **Guard:** `Model/NoCallbacks`, scoped to `app/models/**/*.rb`. Fails CI.
 - **Decision:** [`no-lifecycle-callbacks.md`](decisions/no-lifecycle-callbacks.md)
 
-
-
-
 ## `ci-is-one-command` — CI runs exactly what a developer runs
 
 The build runs `bin/ci` and nothing else. Its steps live in `config/ci.rb`, so a
@@ -67,7 +64,8 @@ green run locally means a green build, and there is no second list of checks to
 drift.
 
 - **Principle:** `one-way-to-say-each-thing`
-- **Guard:** the workflow's only step is `bin/ci`.
+- **Guard:** the workflow runs no check but `bin/ci`. Its other two steps check out
+  the code and install Ruby.
 
 ## `plain-words-in-code` — Identifiers use plain words
 
@@ -75,16 +73,24 @@ No industry term in a name. Name a thing for what the code does with it; the
 industry's own word belongs in data, where it can change without a deploy. Binds
 identifiers, comments, tests and documents; not a quotation of the brief.
 
+The banned terms are the authority on what this means in practice, and they are
+listed in `.rubocop.yml`, not here — a second copy would be a second answer.
+
 - **Principle:** `no-industry-terms`
-- **Guard:** `Vocabulary/BannedTerms`, over `app/**/*.rb` and `db/**/*.rb`. Fails
-  CI. It holds a list, in `.rubocop.yml` under `BannedTerms`, and reads a name the
+- **Guard:** `Vocabulary/BannedTerms`, over `app/**/*.rb`, `db/**/*.rb` and
+  `lib/**/*.rb`. Fails CI. It holds a list, in `.rubocop.yml` under `BannedTerms`, and reads a name the
   way a reader does — splitting on separators *and* on case humps, so `person_id`,
-  `club_person`, `PersonCount` and `PERSON_COUNT` all match one entry while
-  `personal` does not. Matching is case-insensitive but does not inflect, so every
+  `person_id`, `PersonCount` and `PERSON_COUNT` all match one entry while `personal`
+  does not. Matching is case-insensitive but does not inflect, so every
   plural is listed as its own term. Comments and strings are scanned too.
 - **Guard's limit:** the list is checkable; **what belongs on it is not.** Adding a
-  term is a judgement, and no check makes it. `test/` is exempt, because a fixture
-  naming the term it tests the ban on is not a breach of the ban.
+  term is a judgement, and no check makes it.
+- **Exempt:** `test/`, because a fixture naming the term it tests the ban on is not
+  a breach of the ban. Every other tree holding Ruby is covered.
+- **Not an identifier, so not in scope:** prose that names the client or the sport
+  it plays, a quotation of the brief, and any text stating the ban itself. This law
+  is about what things in the code are *called*, not about whether a sentence may
+  mention chess.
 - **Decision:** [`plain-words-in-code.md`](decisions/plain-words-in-code.md)
 
 ## `a-non-trivial-choice-is-a-decision-record` — A non-trivial choice gets a record, not a code comment

@@ -8,8 +8,10 @@ Rules that bind only part of this tree live in that part's own README —
 
 ## True of every file here
 
-**Zeitwerk autoloads this tree.** A file's path is its constant name, so
-`app/x/y_z.rb` defines `X::YZ` and nothing else. Renaming a file renames a
+**Zeitwerk autoloads this tree, and every direct subdirectory of `app/` is its own
+root.** `app/models/y_z.rb` defines `YZ`, not `Models::YZ` — the folder under `app/`
+contributes nothing to the constant. Nesting begins one level further down:
+`app/models/billing/y_z.rb` defines `Billing::YZ`. Renaming a file renames a
 constant.
 
 **Identifiers use plain words**, never the vocabulary of the game — no `Match`, no
