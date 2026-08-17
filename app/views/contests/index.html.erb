@@ -1,0 +1,49 @@
+<h1>Matches</h1>
+
+<div class="toolbar">
+  <%= link_to "Record a match", new_contest_path, class: "button" %>
+  <%= render "search", url: contests_path, listing: @listing, label: "Search by player" %>
+</div>
+
+<% if @page.total.zero? %>
+  <% nothing = @query.present? ? "No match involves “#{@query}”." : "No matches recorded yet." %>
+  <p class="empty"><%= nothing %></p>
+<% else %>
+  <p class="standfirst">Matches can be entered in any order — the board is worked out from all of them, by when they were played.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>
+          <% ascending = @sort == "oldest" %>
+          <%= render "sort_toggle", label: "Played", ascending: ascending,
+                flip_to: ascending ? "newest" : "oldest", listing: @listing %>
+        </th>
+        <th>Result</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @page.rows.each do |contest| %>
+        <% first, second = contest.in_place_order %>
+        <tr>
+          <% local = contest.played_at.in_time_zone(LocalZone::NAME) %>
+          <td class="quiet when"><%= local.strftime("%-d %b %Y, %H:%M") %></td>
+          <td class="result">
+            <% if contest.tie? %>
+              <%= first.person.full_name %> <span class="verb">drew with</span> <%= second.person.full_name %>
+            <% else %>
+              <%= first.person.full_name %> <span class="verb">beat</span> <%= second.person.full_name %>
+            <% end %>
+          </td>
+          <td class="actions">
+            <%= link_to "Edit", edit_contest_path(contest) %>
+            <%= button_to "Remove", contest, method: :delete, form: { data: { turbo_confirm: "Remove this match? The board is worked out again without it." } } %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <%= render "pagination", page: @page, listing: @listing %>
+<% end %>

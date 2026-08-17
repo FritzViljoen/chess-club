@@ -1,0 +1,13 @@
+<h1><%= @person.full_name %></h1>
+
+<dl>
+  <dt>Email</dt><dd><%= @person.email %></dd>
+  <dt>Birthday</dt><dd><%= @person.born_on.to_fs(:long) %></dd>
+  <dt>Joined the club</dt><dd><%= @person.joined_on.to_fs(:long) %></dd>
+  <dt>Games played</dt><dd><%= @person.contest_results.count %></dd>
+</dl>
+
+<p>
+  <%= link_to "Edit", edit_person_path(@person) %> ·
+  <%= link_to "All members", people_path %>
+</p>

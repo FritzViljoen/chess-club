@@ -1,0 +1,41 @@
+<% first, second = contest.in_place_order %>
+
+<%= form_with model: contest do |form| %>
+  <% if contest.errors.any? %>
+    <ul class="errors">
+      <% contest.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  <% end %>
+
+  <div class="field">
+    <%= label_tag :played_at, "Played" %>
+    <% local = contest.played_at&.in_time_zone(LocalZone::NAME) %>
+    <% when_played = local&.strftime("%Y-%m-%dT%H:%M") %>
+    <%= datetime_field_tag :played_at, when_played %>
+    <span class="hint">Date and time, so several matches on one afternoon keep their order.</span>
+  </div>
+
+  <div class="field">
+    <%= label_tag :winner_id, "Winner" %>
+    <% winners = options_from_collection_for_select(people, :id, :full_name, first&.person_id) %>
+    <%= select_tag :winner_id, winners %>
+  </div>
+
+  <div class="field">
+    <%= label_tag :loser_id, "Opponent" %>
+    <% opponents = options_from_collection_for_select(people, :id, :full_name, second&.person_id) %>
+    <%= select_tag :loser_id, opponents %>
+  </div>
+
+  <div class="field checkbox">
+    <%= hidden_field_tag :tie, "0" %>
+    <%= check_box_tag :tie, "1", contest.tie? %>
+    <%= label_tag :tie, "It was a draw" %>
+    <span class="hint">On a draw the two are equal, so which one you picked as winner stops mattering.</span>
+  </div>
+
+  <% action = contest.persisted? ? "Save match" : "Record match" %>
+  <%= form.submit action %>
+<% end %>

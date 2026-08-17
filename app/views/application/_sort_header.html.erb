@@ -1,0 +1,6 @@
+<% if listing.sort == key %>
+  <span class="sorted"><%= label %><span class="marker" aria-hidden="true">▾</span></span>
+  <span class="visually-hidden">, sorted by this column</span>
+<% else %>
+  <%= link_to label, url_for(listing.showing(sort: key)), class: "sortable" %>
+<% end %>

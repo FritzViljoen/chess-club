@@ -1,0 +1,17 @@
+<% if page.pages > 1 %>
+  <nav class="pagination" aria-label="Pages">
+    <% if page.first? %>
+      <span class="step muted">Previous</span>
+    <% else %>
+      <%= link_to "Previous", url_for(listing.showing(page: page.previous)), class: "step", rel: "prev" %>
+    <% end %>
+
+    <span class="tally"><%= page.from %>–<%= page.to %> of <%= page.total %></span>
+
+    <% if page.last? %>
+      <span class="step muted">Next</span>
+    <% else %>
+      <%= link_to "Next", url_for(listing.showing(page: page.following)), class: "step", rel: "next" %>
+    <% end %>
+  </nav>
+<% end %>

@@ -1,0 +1,4 @@
+<%= link_to url_for(listing.showing(sort: flip_to)), class: "sortable" do %>
+  <%= label %><span class="marker" aria-hidden="true"><%= ascending ? "▴" : "▾" %></span>
+<% end %>
+<span class="visually-hidden">, <%= ascending ? "oldest first" : "newest first" %></span>

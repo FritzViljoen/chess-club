@@ -8,3 +8,446 @@
  *
  * Consider organizing styles into separate files for maintainability.
  */
+
+/* The palette is a tournament roll-up board: deep green and buff, on the paper
+   a scoresheet is printed on. Positions are set in a gutter of alternating
+   squares down the left edge of the standings — the one place this design
+   spends its boldness. Everything else stays quiet. */
+:root {
+  --square-dark: #3f5c48;
+  --square-light: #e6dfc9;
+  --ink: #191d19;
+  --ink-soft: #6a6f66;
+  --paper: #f7f5ee;
+  --sheet: #fffefa;
+  --rule: #d8d2be;
+  --brass: #8a6a22;
+  --claret: #7c2b34;
+
+  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Charter, Georgia, serif;
+  --sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --figure: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 16px/1.6 var(--sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* The nav sits on a strip of board. Eight squares, because that is how many a
+   board has — the one decorative element, and it encodes something true. */
+body > nav {
+  display: flex;
+  align-items: center;
+  gap: 1.75rem;
+  padding: 1.1rem 2rem;
+  background: var(--sheet);
+  border-bottom: 1px solid var(--rule);
+  position: relative;
+}
+
+/* Scoped to the header. The pagination is also a nav, and the board strip is
+   the header's alone — two of them is one too many. */
+body > nav::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -4px;
+  height: 4px;
+  background: repeating-linear-gradient(
+    to right,
+    var(--square-dark) 0 2rem,
+    var(--square-light) 2rem 4rem
+  );
+}
+
+body > nav a {
+  color: var(--ink-soft);
+  text-decoration: none;
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;
+  padding-bottom: 2px;
+  border-bottom: 1px solid transparent;
+}
+
+body > nav a:hover, body > nav a:focus-visible { color: var(--square-dark); border-bottom-color: var(--square-dark); }
+
+.wordmark {
+  font-family: var(--serif);
+  font-size: 1.12rem;
+  color: var(--ink);
+  margin-right: auto;
+  letter-spacing: 0.01em;
+}
+
+.wordmark:hover { border-bottom-color: transparent; color: var(--square-dark); }
+
+.knight {
+  color: var(--square-dark);
+  font-size: 1.35rem;
+  line-height: 1;
+  vertical-align: -0.1em;
+}
+
+.nav-links { display: flex; gap: 1.6rem; }
+
+.standfirst {
+  color: var(--ink-soft);
+  font-size: 0.92rem;
+  margin: -1.2rem 0 1.6rem;
+  max-width: 34rem;
+}
+
+/* Only rank 1 carries it, so it marks the one fact worth marking. */
+.crown {
+  color: var(--brass);
+  font-size: 1.1rem;
+  margin-left: 0.35rem;
+  vertical-align: 0.02em;
+}
+
+.verb { color: var(--ink-soft); }
+td.quiet { color: var(--ink-soft); font-size: 0.92rem; }
+td.when { white-space: nowrap; font-family: var(--figure); font-size: 0.84rem; width: 1%; }
+/* The email column takes the slack, so nothing else has to wrap. */
+td.fill { width: 100%; }
+td.who { white-space: nowrap; font-family: var(--serif); font-size: 1.05rem; }
+td.who a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--rule); }
+td.who a:hover { color: var(--square-dark); border-bottom-color: var(--square-dark); }
+td.result { font-family: var(--serif); font-size: 1.05rem; }
+
+main {
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: 3rem 2rem 5rem;
+}
+
+h1 {
+  font-family: var(--serif);
+  font-size: 2.1rem;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  margin: 0 0 2rem;
+}
+
+a { color: var(--brass); }
+
+/* ---- Tables ------------------------------------------------------------- */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--sheet);
+  border: 1px solid var(--rule);
+}
+
+th, td {
+  text-align: left;
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+th {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.11em;
+  color: var(--ink-soft);
+  font-weight: 600;
+  padding-top: 0.9rem;
+  padding-bottom: 0.9rem;
+}
+
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: rgba(63, 92, 72, 0.04); }
+
+.number {
+  text-align: right;
+  font-family: var(--figure);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.92rem;
+  width: 1%;
+  white-space: nowrap;
+}
+
+td.actions { text-align: right; white-space: nowrap; }
+td.actions form { display: inline; margin-left: 0.6rem; }
+td.actions a { font-size: 0.85rem; }
+
+/* ---- The standings gutter ----------------------------------------------- */
+/* The signature. Each position sits in its own square, alternating light and
+   dark down the column the way ranks alternate up the edge of a board. */
+
+.standings td.position {
+  width: 3.25rem;
+  padding: 0;
+  text-align: center;
+  font-family: var(--figure);
+  font-size: 1.05rem;
+  font-variant-numeric: tabular-nums;
+  border-bottom: none;
+  vertical-align: middle;
+}
+
+.standings tbody tr:nth-child(odd) td.position {
+  background: var(--square-light);
+  color: var(--ink);
+}
+
+.standings tbody tr:nth-child(even) td.position {
+  background: var(--square-dark);
+  color: var(--square-light);
+}
+
+.standings tbody tr:hover td.position { filter: brightness(1.06); }
+
+.standings td.name {
+  font-family: var(--serif);
+  font-size: 1.12rem;
+  padding-left: 1.25rem;
+}
+
+.standings th.position {
+  width: 3.25rem;
+  text-align: center;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* One orchestrated moment: the ladder settles into place on load, top first. */
+@media (prefers-reduced-motion: no-preference) {
+  .standings tbody tr {
+    animation: settle 0.42s cubic-bezier(0.2, 0.7, 0.3, 1) backwards;
+  }
+  .standings tbody tr:nth-child(1) { animation-delay: 0.02s; }
+  .standings tbody tr:nth-child(2) { animation-delay: 0.06s; }
+  .standings tbody tr:nth-child(3) { animation-delay: 0.10s; }
+  .standings tbody tr:nth-child(4) { animation-delay: 0.14s; }
+  .standings tbody tr:nth-child(5) { animation-delay: 0.18s; }
+  .standings tbody tr:nth-child(6) { animation-delay: 0.22s; }
+  .standings tbody tr:nth-child(n+7) { animation-delay: 0.26s; }
+}
+
+@keyframes settle {
+  from { opacity: 0; transform: translateY(-0.4rem); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ---- Toolbar and search --------------------------------------------------- */
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.75rem;
+}
+
+.search {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.search input[type=search] {
+  width: 14rem;
+  max-width: none;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  background: var(--sheet);
+  font: inherit;
+  font-size: 0.92rem;
+}
+
+.search input[type=submit] {
+  background: transparent;
+  color: var(--square-dark);
+  border-color: var(--rule);
+  font-size: 0.88rem;
+  padding: 0.45rem 0.85rem;
+}
+
+.search input[type=submit]:hover { background: var(--square-light); }
+.search .clear { font-size: 0.85rem; }
+
+/* ---- Sorting and paging -------------------------------------------------- */
+
+th a.sortable, th .sorted {
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px dotted var(--rule);
+}
+
+th a.sortable:hover { color: var(--square-dark); border-bottom-color: var(--square-dark); }
+th .sorted { color: var(--ink); border-bottom: none; }
+.marker { margin-left: 0.25rem; color: var(--brass); }
+
+.pagination {
+  display: flex;
+  align-items: baseline;
+  gap: 1.25rem;
+  margin-top: 1rem;
+  font-size: 0.86rem;
+}
+
+.pagination .tally {
+  margin-right: auto;
+  order: -1;
+  color: var(--ink-soft);
+  font-family: var(--figure);
+  font-size: 0.8rem;
+}
+
+.pagination .step { color: var(--brass); text-decoration: none; border-bottom: 1px solid transparent; }
+.pagination .step:hover { border-bottom-color: var(--brass); }
+.pagination .muted { color: var(--rule); }
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---- Definition lists ---------------------------------------------------- */
+
+dl {
+  background: var(--sheet);
+  border: 1px solid var(--rule);
+  padding: 1.4rem 1.5rem;
+  margin: 0;
+}
+
+dt {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.11em;
+  color: var(--ink-soft);
+  font-weight: 600;
+}
+
+dd { margin: 0.15rem 0 1.1rem; font-size: 1.02rem; }
+dd:last-child { margin-bottom: 0; }
+
+/* ---- Forms --------------------------------------------------------------- */
+
+.field { margin-bottom: 1.35rem; }
+
+.field label {
+  display: block;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-soft);
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+}
+
+.field.checkbox label {
+  display: inline;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--ink);
+  margin-left: 0.4rem;
+}
+
+input[type=text], input[type=email], input[type=date], input[type=datetime-local], select {
+  width: 100%;
+  max-width: 22rem;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  background: var(--sheet);
+  color: var(--ink);
+  font: inherit;
+}
+
+input:focus-visible, select:focus-visible, a:focus-visible, button:focus-visible {
+  outline: 2px solid var(--square-dark);
+  outline-offset: 2px;
+}
+
+.hint {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  margin-top: 0.3rem;
+  max-width: 22rem;
+}
+
+input[type=submit], .button, button {
+  padding: 0.55rem 1.15rem;
+  border: 1px solid var(--square-dark);
+  border-radius: 2px;
+  background: var(--square-dark);
+  color: var(--square-light);
+  font: inherit;
+  font-size: 0.92rem;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+
+input[type=submit]:hover, .button:hover, button:hover { background: #35503d; }
+
+td.actions button {
+  background: transparent;
+  color: var(--claret);
+  border-color: transparent;
+  padding: 0.2rem 0;
+  font-size: 0.85rem;
+}
+
+td.actions button:hover { background: transparent; text-decoration: underline; }
+
+/* ---- Messages ------------------------------------------------------------ */
+
+.errors {
+  border-left: 3px solid var(--claret);
+  background: var(--sheet);
+  color: var(--claret);
+  margin: 0 0 1.5rem;
+  padding: 0.8rem 1rem 0.8rem 2rem;
+}
+
+.flash {
+  border-left: 3px solid var(--square-dark);
+  background: var(--sheet);
+  padding: 0.65rem 1rem;
+  margin: 0 0 1.75rem;
+  font-size: 0.93rem;
+}
+
+.flash.alert { border-left-color: var(--claret); color: var(--claret); }
+
+.empty {
+  color: var(--ink-soft);
+  font-family: var(--serif);
+  font-size: 1.05rem;
+}
+
+p .button { margin-bottom: 1.5rem; }
+
+/* ---- Small screens ------------------------------------------------------- */
+
+@media (max-width: 34rem) {
+  main { padding: 2rem 1.1rem 3rem; }
+  nav { padding: 0.9rem 1.1rem; gap: 1.1rem; }
+  h1 { font-size: 1.6rem; }
+  th, td { padding: 0.6rem 0.7rem; }
+  .standings td.name { font-size: 1rem; padding-left: 0.9rem; }
+}

@@ -9,7 +9,7 @@ class Listing
   end
 
   def showing(**overrides)
-    { sort: sort, q: query }.compact_blank.merge(overrides)
+    { sort: sort, search: query }.compact_blank.merge(overrides)
   end
 
   def searching?

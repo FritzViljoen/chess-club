@@ -1,23 +1,47 @@
 require "test_helper"
 
 class TypedParamsTest < ActiveSupport::TestCase
-  # The parsers are private to a controller, so the test reaches them the way an
-  # action does — through a controller that has included the concern.
   class Seam < ActionController::Base
     include TypedParams
 
     public :date_param, :date_param!, :time_param, :time_param!, :integer_param, :integer_param!,
       :decimal_param, :decimal_param!, :boolean_param, :boolean_param!, :enum_param, :enum_param!,
-      :time_zone_param, :time_zone_param!
+      :time_zone_param, :time_zone_param!, :text_param, :text_param!
   end
 
   ALLOWED = %w[open closed].freeze
 
-  # Two hours ahead of the process zone, so a time read in the wrong one is a
-  # different instant. `ELSEWHERE` is a second zone, for the tests that show the
-  # zone is what decided the answer.
   ZONE = "Africa/Johannesburg"
   ELSEWHERE = "Etc/UTC"
+
+  test "text comes back as the word that was typed" do
+    assert_equal "Botha", seam(q: "Botha").text_param(:q)
+    assert_equal "Botha", seam(q: "  Botha  ").text_param(:q), "expected the term to be trimmed"
+  end
+
+  test "text that is absent or blank is the default" do
+    assert_equal "", seam({}).text_param(:q)
+    assert_equal "", seam(q: "   ").text_param(:q)
+    assert_equal "all", seam({}).text_param(:q, default: "all")
+  end
+
+  test "an array or a hash where a word was expected is refused" do
+    assert_equal "", seam(q: [ "x" ]).text_param(:q), "expected an array to be refused, not stringified"
+    assert_equal "", seam(q: { "a" => "1" }).text_param(:q), "expected a hash to be refused"
+  end
+
+  test "text over the limit is refused, not truncated" do
+    assert_raises(TypedParams::BadParam) { seam(q: "x" * 5_000).text_param(:q) }
+    assert_raises(TypedParams::BadParam) { seam(q: "abcdefgh").text_param(:q, limit: 5, default: "none") }
+    assert_equal "abcde", seam(q: "abcde").text_param(:q, limit: 5), "expected the limit itself to pass"
+    assert_raises(TypedParams::BadParam) { seam(q: "x" * 5_000).text_param!(:q) }
+  end
+
+  test "the bang form bounces what the plain form defaults" do
+    assert_equal "Botha", seam(q: "Botha").text_param!(:q)
+    assert_raises(TypedParams::BadParam) { seam({}).text_param!(:q) }
+    assert_raises(TypedParams::BadParam) { seam(q: [ "x" ]).text_param!(:q) }
+  end
 
   test "a date is parsed, in the format the date fields post" do
     assert_equal Date.new(2026, 8, 17), seam(on: "17 August 2026").date_param(:on, time_zone: ZONE)
@@ -217,7 +241,6 @@ class TypedParamsTest < ActiveSupport::TestCase
     end
 end
 
-# Input the requester got wrong bounces, and never reaches the domain or a 500.
 class TypedParamsBounceTest < ActionController::TestCase
   class BounceController < ActionController::Base
     include TypedParams
@@ -226,7 +249,6 @@ class TypedParamsBounceTest < ActionController::TestCase
       render plain: integer_param!(:page)
     end
 
-    # An action that wants the requester's own zone asks for it.
     def on
       render plain: date_param!(:on, time_zone: :time_zone)
     end

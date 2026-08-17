@@ -2,15 +2,15 @@ require "test_helper"
 
 class ListingTest < ActiveSupport::TestCase
   test "a link carries the sort and the search, plus what it changes" do
-    assert_equal({ sort: "played", q: "nd", page: 3 }, listing.showing(page: 3))
+    assert_equal({ sort: "played", search: "nd", page: 3 }, listing.showing(page: 3))
   end
 
   test "what the link changes wins over what it carries" do
-    assert_equal({ sort: "joined", q: "nd" }, listing.showing(sort: "joined"))
+    assert_equal({ sort: "joined", search: "nd" }, listing.showing(sort: "joined"))
   end
 
   test "the search survives a re-sort" do
-    assert_equal "nd", listing.showing(sort: "joined")[:q]
+    assert_equal "nd", listing.showing(sort: "joined")[:search]
   end
 
   test "a blank sort or search is dropped, never sent as an empty parameter" do
@@ -19,7 +19,7 @@ class ListingTest < ActiveSupport::TestCase
   end
 
   test "nothing else travels — a link is not a place to pass through what arrived" do
-    assert_equal %i[ sort q page ], listing.showing(page: 2).keys
+    assert_equal %i[ sort search page ], listing.showing(page: 2).keys
   end
 
   test "knows whether a search is on, for the control that clears it" do
