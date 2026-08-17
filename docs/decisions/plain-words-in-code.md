@@ -4,6 +4,7 @@
 - **Date:** 2026-08-17
 - **Deciders:** FV
 - **Enacts:** constitution → `plain-words-in-code`
+- **Principle:** `no-industry-terms`
 
 ## Context
 

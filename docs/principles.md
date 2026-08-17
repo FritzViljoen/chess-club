@@ -45,13 +45,30 @@ applies is worse than one that refuses, so the whole shuffle is one transaction.
 Silence is the failure mode to design out: a guard that skips the file it cannot
 parse, a rule that passes because it was never asked, a rescue that swallows.
 
-### `plain-words-over-jargon` — Plain words over jargon
+### `no-industry-terms` — No industry terms in code; use the generic word
 
-Code and documents use words a reader outside this hobby would understand. The
-rules of the ranking are the domain; the vocabulary of a chess club is not. So a
-contest between two players is a *game*, an equal result is a *tie*, and the
-ranked list is the *standings*. When the plain word and the specialist word both
-fit, the plain one wins.
+**Code and documents use words a reader outside the industry would understand.** A
+term of art asks every reader to have been in the room where it was learned, and
+the reader who has not cannot tell a rule from a ritual.
+
+The distinction that matters: **the rules of a domain are worth modelling; the
+vocabulary around them is not.** How positions move when two participants meet is
+the domain. That the participants are chess players, that an equal result is called
+a draw, that a weaker player winning is called an upset — none of that is. So a
+contest is a `Game`, an equal result is a `tie`, and the ranked list is the
+`standings`.
+
+When the generic word and the specialist word both fit, the generic one wins. This
+binds identifiers, comments, tests and these documents; it does not bind a quotation
+of the brief, which is reproduced as written.
+
+There is a real counter-argument — matching the client's spoken vocabulary reduces
+translation errors between conversation and code — and it is answered in
+[`decisions/plain-words-in-code.md`](decisions/plain-words-in-code.md), which also
+records the cost of overriding it.
+
+*Produces* `plain-words-in-code`, which has no guard: whether a word is jargon is a
+judgement, and no check can make it.
 
 ### `one-way-to-say-each-thing` — One way to say each thing; variation is the defect
 

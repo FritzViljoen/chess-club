@@ -102,10 +102,11 @@ drift.
 
 ## `plain-words-in-code` — Identifiers use plain words
 
-No specialist vocabulary in names: a contest is a `Game`, an equal result is a
-`tie`, the ranked list is the `standings`.
+No industry term in a name: a contest is a `Game`, an equal result is a `tie`, the
+ranked list is the `standings`. Binds identifiers, comments, tests and documents;
+not a quotation of the brief.
 
-- **Principle:** `plain-words-over-jargon`
+- **Principle:** `no-industry-terms`
 - **Guard:** none. This is a judgement a reviewer makes, and no check can make
   it.
 - **Decision:** [`plain-words-in-code.md`](decisions/plain-words-in-code.md)
