@@ -12,6 +12,16 @@ class Contest < ApplicationRecord
   validate :somebody_finished_first
   validate :played_after_everybody_joined
 
+  # Best first. On a tie the two share a place, so the order between them says
+  # nothing and `id` just keeps it stable.
+  def in_place_order
+    contest_results.sort_by { |result| [ result.place, result.person_id ] }
+  end
+
+  def tie?
+    contest_results.map(&:place).uniq.size == 1
+  end
+
   private
     def two_different_people
       if contest_results.size != PARTICIPANTS

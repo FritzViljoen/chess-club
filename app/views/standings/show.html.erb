@@ -1,0 +1,20 @@
+<h1>Standings</h1>
+
+<% if @standings.empty? %>
+  <p class="empty">Nobody has joined yet. <%= link_to "Add somebody", new_person_path %>.</p>
+<% else %>
+  <table>
+    <thead>
+      <tr><th class="number">Position</th><th>Name</th><th class="number">Contests played</th></tr>
+    </thead>
+    <tbody>
+      <% @standings.each do |standing| %>
+        <tr>
+          <td class="number"><%= standing.position %></td>
+          <td><%= standing.person.name %> <%= standing.person.surname %></td>
+          <td class="number"><%= standing.person.contest_results.size %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>

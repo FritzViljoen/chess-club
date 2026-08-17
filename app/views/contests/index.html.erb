@@ -1,0 +1,32 @@
+<h1>Contests</h1>
+
+<p><%= link_to "Record a contest", new_contest_path, class: "button" %></p>
+
+<% if @contests.empty? %>
+  <p class="empty">No contests recorded yet.</p>
+<% else %>
+  <table>
+    <thead>
+      <tr><th>Played</th><th>Outcome</th><th></th></tr>
+    </thead>
+    <tbody>
+      <% @contests.each do |contest| %>
+        <% first, second = contest.in_place_order %>
+        <tr>
+          <td><%= contest.played_at.in_time_zone(LocalZone::NAME).to_fs(:long) %></td>
+          <td>
+            <% if contest.tie? %>
+              <%= first.person.full_name %> and <%= second.person.full_name %> tied
+            <% else %>
+              <%= first.person.full_name %> beat <%= second.person.full_name %>
+            <% end %>
+          </td>
+          <td class="actions">
+            <%= link_to "Edit", edit_contest_path(contest) %>
+            <%= button_to "Remove", contest, method: :delete, form: { data: { turbo_confirm: "Remove this contest? The standings are recalculated without it." } } %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>

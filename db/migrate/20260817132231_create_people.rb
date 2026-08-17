@@ -10,9 +10,10 @@ class CreatePeople < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    # Partial, because email is optional and no column is nullable: somebody
-    # without one holds '', and a plain unique index would let the first such
-    # person in and refuse the second. Unique among the people who have one.
-    add_index :people, :email, unique: true, where: "email != ''"
+    # Email is how a person is identified from outside: the brief gives no
+    # number to use instead, and `id` is this database's business rather than
+    # anybody's way of naming somebody. So it is required and unique, and the
+    # index is what makes that true rather than the validation.
+    add_index :people, :email, unique: true
   end
 end

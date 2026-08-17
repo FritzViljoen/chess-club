@@ -8,3 +8,135 @@
  *
  * Consider organizing styles into separate files for maintainability.
  */
+
+:root {
+  --ink: #1a1a17;
+  --quiet: #6b6b63;
+  --line: #ddd9cf;
+  --paper: #faf8f3;
+  --card: #fff;
+  --accent: #7a3f1d;
+  --bad: #8c2f2f;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 16px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+nav {
+  display: flex;
+  gap: 1.5rem;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid var(--line);
+  background: var(--card);
+}
+
+nav a {
+  color: var(--quiet);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+nav a:hover { color: var(--accent); }
+
+main {
+  max-width: 52rem;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0 0 1.5rem;
+}
+
+a { color: var(--accent); }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--card);
+  border: 1px solid var(--line);
+}
+
+th, td {
+  text-align: left;
+  padding: 0.6rem 0.9rem;
+  border-bottom: 1px solid var(--line);
+}
+
+th {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--quiet);
+  font-weight: 600;
+}
+
+tbody tr:last-child td { border-bottom: none; }
+/* Shrink to their contents, so a number column does not stretch its header away
+   from the figures underneath it. */
+.number { text-align: right; font-variant-numeric: tabular-nums; width: 1%; white-space: nowrap; }
+td.actions { text-align: right; white-space: nowrap; }
+
+td.actions form { display: inline; margin-left: 0.75rem; }
+
+dl { background: var(--card); border: 1px solid var(--line); padding: 1rem 1.25rem; margin: 0; }
+dt { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--quiet); }
+dd { margin: 0 0 0.9rem; }
+dd:last-child { margin-bottom: 0; }
+
+.field { margin-bottom: 1.1rem; }
+.field label { display: block; font-weight: 500; margin-bottom: 0.3rem; }
+.field.checkbox label { display: inline; font-weight: 400; }
+
+input[type=text], input[type=email], input[type=date], input[type=datetime-local], select {
+  width: 100%;
+  max-width: 24rem;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: var(--card);
+  font: inherit;
+}
+
+.hint { display: block; font-size: 0.8rem; color: var(--quiet); margin-top: 0.25rem; }
+
+input[type=submit], .button, button {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: var(--card);
+  color: var(--accent);
+  font: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+
+input[type=submit]:hover, .button:hover, button:hover { border-color: var(--accent); }
+
+.errors {
+  border-left: 3px solid var(--bad);
+  background: var(--card);
+  color: var(--bad);
+  margin: 0 0 1.25rem;
+  padding: 0.75rem 1rem 0.75rem 2rem;
+}
+
+.flash {
+  border-left: 3px solid var(--accent);
+  background: var(--card);
+  padding: 0.6rem 1rem;
+  margin: 0 0 1.5rem;
+}
+
+.flash.alert { border-left-color: var(--bad); color: var(--bad); }
+.empty { color: var(--quiet); }

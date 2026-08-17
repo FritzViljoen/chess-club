@@ -1,0 +1,6 @@
+<% first, second = @contest.in_place_order %>
+
+<h1>Edit contest</h1>
+
+<%= render "form", contest: @contest, people: @people,
+      first_place: first&.person_id, second_place: second&.person_id, tie: @contest.tie? %>

@@ -32,10 +32,9 @@ class RemovePersonTest < ActiveSupport::TestCase
     end
 
     def record_contest(winner, loser)
-      contest = Contest.new(played_at: LocalZone.zone.parse("2026-03-03 18:00"))
-      contest.contest_results.build(person: winner, place: 1)
-      contest.contest_results.build(person: loser, place: 2)
-      contest.save!
-      contest
+      CreateContest.call(
+        played_at: LocalZone.zone.parse("2026-03-03 18:00"),
+        winner: winner, loser: loser, tie: false
+      ).value
     end
 end

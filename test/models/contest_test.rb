@@ -66,10 +66,11 @@ class ContestTest < ActiveSupport::TestCase
       subject
     end
 
+    # Through the service, like everything else that needs a person to exist.
     def new_person(email)
-      Person.create!(
+      CreatePerson.call(
         name: "Ann", surname: "Baker", email: email,
         born_on: Date.new(1990, 4, 2), joined_on: Date.new(2026, 1, 5)
-      )
+      ).value
     end
 end

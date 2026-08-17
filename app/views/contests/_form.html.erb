@@ -1,0 +1,34 @@
+<%= form_with model: contest do |form| %>
+  <% if contest.errors.any? %>
+    <ul class="errors">
+      <% contest.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  <% end %>
+
+  <div class="field">
+    <%= label_tag :played_at, "Played at" %>
+    <%= datetime_field_tag :played_at, contest.played_at&.in_time_zone(LocalZone::NAME)&.strftime("%Y-%m-%dT%H:%M") %>
+    <span class="hint">Date and time, so contests on one afternoon keep their order.</span>
+  </div>
+
+  <div class="field">
+    <%= label_tag "contest[winner_id]", "First place" %>
+    <%= select_tag "contest[winner_id]", options_from_collection_for_select(people, :id, :full_name, first_place) %>
+  </div>
+
+  <div class="field">
+    <%= label_tag "contest[loser_id]", "Second place" %>
+    <%= select_tag "contest[loser_id]", options_from_collection_for_select(people, :id, :full_name, second_place) %>
+  </div>
+
+  <div class="field checkbox">
+    <%= hidden_field_tag :tie, "0" %>
+    <%= check_box_tag :tie, "1", tie %>
+    <%= label_tag :tie, "It was a tie" %>
+    <span class="hint">A tie makes the two places equal, so which is which stops mattering.</span>
+  </div>
+
+  <%= form.submit %>
+<% end %>

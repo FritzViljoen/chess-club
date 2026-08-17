@@ -1,0 +1,27 @@
+<h1>People</h1>
+
+<p><%= link_to "Add somebody", new_person_path, class: "button" %></p>
+
+<% if @people.empty? %>
+  <p class="empty">Nobody yet.</p>
+<% else %>
+  <table>
+    <thead>
+      <tr><th>Name</th><th>Email</th><th>Joined</th><th class="number">Contests</th><th></th></tr>
+    </thead>
+    <tbody>
+      <% @people.each do |person| %>
+        <tr>
+          <td><%= link_to "#{person.name} #{person.surname}", person %></td>
+          <td><%= person.email %></td>
+          <td><%= person.joined_on.to_fs(:long) %></td>
+          <td class="number"><%= person.contest_results.size %></td>
+          <td class="actions">
+            <%= link_to "Edit", edit_person_path(person) %>
+            <%= button_to "Remove", person, method: :delete, form: { data: { turbo_confirm: "Remove #{person.name}? Their contests go too." } } %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>

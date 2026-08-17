@@ -13,25 +13,25 @@ class PersonTest < ActiveSupport::TestCase
   end
 
   test "refuses a duplicate email" do
-    person.save!
+    CreatePerson.call(
+      name: "Ann", surname: "Baker", email: "ann@example.test",
+      born_on: Date.new(1990, 4, 2), joined_on: Date.new(2026, 1, 5)
+    )
     duplicate = person(email: "ann@example.test")
 
     assert_not duplicate.valid?, "expected a repeated email to be refused"
   end
 
-  test "allows more than one person without an email" do
-    person(email: "").save!
-    second = person(email: "")
+  test "refuses a blank email" do
+    subject = person(email: "")
 
-    assert second.valid?, "expected a blank email to be exempt from uniqueness"
-    assert second.save, "expected the partial index to let a second blank through"
-  end
-
-  test "starts with a blank email rather than nothing" do
-    assert_equal "", Person.new.email, "expected the model to supply the starting value"
+    assert_not subject.valid?, "expected the identifier to be required"
+    assert_includes subject.errors[:email], "can't be blank"
   end
 
   private
+    # Unsaved and built directly, because the validations are what this file
+    # tests — anything that needs a person to *exist* goes through CreatePerson.
     def person(**overrides)
       Person.new(
         name: "Ann",

@@ -1,0 +1,38 @@
+<%= form_with model: person do |form| %>
+  <% if person.errors.any? %>
+    <ul class="errors">
+      <% person.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  <% end %>
+
+  <div class="field">
+    <%= form.label :name %>
+    <%= form.text_field :name %>
+  </div>
+
+  <div class="field">
+    <%= form.label :surname %>
+    <%= form.text_field :surname %>
+  </div>
+
+  <div class="field">
+    <%= form.label :email %>
+    <%= form.email_field :email, required: true %>
+    <span class="hint">How this person is identified. Must be unique.</span>
+  </div>
+
+  <div class="field">
+    <%= label_tag :born_on, "Date of birth" %>
+    <%= date_field_tag :born_on, person.born_on %>
+  </div>
+
+  <div class="field">
+    <%= label_tag :joined_on, "Joined on" %>
+    <%= date_field_tag :joined_on, person.joined_on %>
+    <span class="hint">Decides where they start in the standings.</span>
+  </div>
+
+  <%= form.submit %>
+<% end %>
