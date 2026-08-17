@@ -52,6 +52,19 @@ class UpdateContestTest < ActiveSupport::TestCase
       "expected the original outcome to survive untouched"
   end
 
+  test "a refused edit leaves the board alone" do
+    people = 4.times.map { |index| create_person(email: "p#{index}@example.test", joined_on: Date.new(2026, 1, 1) + index) }
+    contest = CreateContest.call(played_at: local_time("2026-03-03 18:00"),
+      winner: people[3], loser: people[0], tie: false)
+    before = StandingsCache.order(:position).pluck(:person_id)
+
+    UpdateContest.call(contest: contest, played_at: local_time("2026-03-03 18:00"),
+      winner: people[1], loser: people[1], tie: false)
+
+    assert_equal before, StandingsCache.order(:position).pluck(:person_id),
+      "expected a refusal to change no position"
+  end
+
   private
     def record(winner, loser)
       CreateContest.call(played_at: local_time("2026-03-03 18:00"),

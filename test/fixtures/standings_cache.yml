@@ -1,0 +1,5 @@
+# Deliberately empty, for the reason given in people.yml: the file exists so that
+# `fixtures :all` clears this table before each test.
+#
+# Nothing would ever be written here by hand in any case — the rows are derived
+# and replaced wholesale by WriteStandingsCache.

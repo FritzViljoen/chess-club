@@ -11,6 +11,8 @@ class UpdatePerson < Service
   def call
     ApplicationRecord.transaction do
       raise ActiveRecord::Rollback unless @person.update(**changes)
+
+      RecalculateStandings.call
     end
 
     @person

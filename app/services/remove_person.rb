@@ -9,6 +9,8 @@ class RemovePerson < Service
       ContestResult.where(contest_id: contest_ids).delete_all
       Contest.where(id: contest_ids).delete_all
       @person.destroy!
+
+      RecalculateStandings.call
     end
 
     @person

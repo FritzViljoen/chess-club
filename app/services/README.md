@@ -24,4 +24,9 @@ what they do — never by a flag.
 inside a transaction block COMMITS it; abandon work with
 `raise ActiveRecord::Rollback`.
 
+**A service that changes the log recalculates the standings, in that same
+transaction.** No position is written by hand, so a write that leaves the cache
+alone leaves it wrong. **Nothing checks this** — no cop, no test
+(decision → [`positions-are-derived-from-a-log`](../../docs/decisions/positions-are-derived-from-a-log.md)).
+
 **Nothing here knows about HTTP.** No params, no session, no rendering.
