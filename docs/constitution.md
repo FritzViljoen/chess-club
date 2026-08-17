@@ -47,6 +47,16 @@ outlives its migration is what `no-nullable-columns` forbids.
 - **Decision:**
   [`a-nullable-column-lives-inside-one-migration.md`](decisions/a-nullable-column-lives-inside-one-migration.md)
 
+## `no-lifecycle-callbacks` — No model registers an Active Record lifecycle callback
+
+No `before_save`, `after_create`, `after_commit` or any of their siblings, in a
+model or in a concern included into one. Work goes in a named method the caller
+invokes.
+
+- **Principle:** `one-decision-one-place`, `nothing-fails-quietly`
+- **Guard:** `Model/NoCallbacks`, scoped to `app/models/**/*.rb`. Fails CI.
+- **Decision:** [`no-lifecycle-callbacks.md`](decisions/no-lifecycle-callbacks.md)
+
 ## `ranks-are-a-dense-unique-sequence` — Ranks are exactly `1..n`, one member per rank
 
 Every member holds a rank. No rank is shared, no rank is skipped, and the highest
@@ -79,7 +89,6 @@ examples.
 - **Principle:** `one-decision-one-place`
 - **Guard:** none that a machine can apply. A reviewer checks that no other file
   computes a rank.
-- **Reference:** [`domain/ranking.md`](domain/ranking.md)
 
 ## `ci-is-one-command` — CI runs exactly what a developer runs
 

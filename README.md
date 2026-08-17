@@ -11,7 +11,6 @@ obeys, and why each was chosen.
 
 | If you want | Read |
 |---|---|
-| The ranking rules, with worked examples | [`docs/domain/ranking.md`](docs/domain/ranking.md) |
 | How the code is built | [`docs/principles.md`](docs/principles.md) |
 | The rules it must obey, and their guards | [`docs/constitution.md`](docs/constitution.md) |
 | Why a specific decision was made | [`docs/decisions/`](docs/decisions/) |

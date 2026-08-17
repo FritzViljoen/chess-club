@@ -4,7 +4,6 @@
 - **Date:** 2026-08-17
 - **Deciders:** FV
 - **Enacts:** constitution → `ranks-are-a-dense-unique-sequence`
-- **Reference:** [`domain/ranking.md`](../domain/ranking.md)
 
 ## Context
 

@@ -4,7 +4,6 @@
 - **Date:** 2026-08-17
 - **Deciders:** FV
 - **Enacts:** constitution → `plain-words-in-code`
-- **Related:** [`domain/ranking.md`](../domain/ranking.md)
 
 ## Context
 
@@ -48,8 +47,8 @@ translation errors between conversation and code. It is accepted below.
 - **A translation step in conversation.** The club says "match" and "draw"; the
   code says `Game` and `tie`. Anyone moving between the two has to map them, which
   is exactly the cost DDD's ubiquitous language exists to avoid.
-- **The brief and the code disagree on words.** [`domain/ranking.md`](../domain/ranking.md)
-  states the mapping once so the disagreement is documented rather than confusing.
+- **The brief and the code disagree on words.** The mapping is stated once, where
+  the domain is described, so the disagreement is documented rather than confusing.
 - **No check enforces it.** Whether a word is jargon is a judgement, so this is
   held by review and by this record — see the constitution, which says so beside
   the law.

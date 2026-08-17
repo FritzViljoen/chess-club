@@ -10,7 +10,6 @@ and what was decided along the way.
 | How the code is built | [`principles.md`](principles.md) |
 | The rules it must obey | [`constitution.md`](constitution.md) |
 | Why a specific decision was made | [`decisions/`](decisions/) |
-| What the app actually does | [`domain/`](domain/) |
 
 ## Three layers
 
@@ -56,8 +55,7 @@ hold for every file in it and in all of its subfolders**. A rule that binds part
 the tree goes in that part's own README, not the parent's — which is why the
 migration rules are in `db/migrate/` and not in `db/`.
 
-Nothing domain-specific belongs in a folder document. What the application does is
-described in [`domain/`](domain/), once.
+Nothing domain-specific belongs in a folder document.
 
 ## A note on `CLAUDE.md` files
 

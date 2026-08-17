@@ -3,7 +3,6 @@
 - **Status:** Accepted
 - **Date:** 2026-08-17
 - **Deciders:** FV
-- **Reference:** [`domain/ranking.md`](../domain/ranking.md)
 
 ## Context
 

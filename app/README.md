@@ -3,9 +3,8 @@
 The application. Server-rendered ERB on the Rails 8 defaults — Propshaft,
 importmap, Turbo. No separate front end and no build step.
 
-What the application does is described in
-[`../docs/domain/`](../docs/domain/). Rules that bind only part of this tree live
-in that part's own README.
+Rules that bind only part of this tree live in that part's own README —
+[`models/`](models/README.md), [`controllers/`](controllers/README.md).
 
 ## True of every file here
 

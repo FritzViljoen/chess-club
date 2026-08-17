@@ -30,6 +30,7 @@ amended by a decision that names the law it changes.
 | [`no-database-defaults`](no-database-defaults.md) | No column carries a database default |
 | [`a-nullable-column-lives-inside-one-migration`](a-nullable-column-lives-inside-one-migration.md) | A column may be nullable only between two statements of one method |
 | [`engine-migrations-are-not-ours-to-edit`](engine-migrations-are-not-ours-to-edit.md) | House rules do not apply to migrations copied in from an engine |
+| [`no-lifecycle-callbacks`](no-lifecycle-callbacks.md) | No model registers an Active Record lifecycle callback |
 | [`ranks-are-a-dense-unique-sequence`](ranks-are-a-dense-unique-sequence.md) | Ranks are exactly `1..n`, one member per rank |
 | [`a-two-rank-gap-favours-the-winner`](a-two-rank-gap-favours-the-winner.md) | Where the brief contradicts itself, the winner's stated gain is honoured |
 | [`ci-is-one-command`](ci-is-one-command.md) | CI runs `bin/ci` and nothing else |

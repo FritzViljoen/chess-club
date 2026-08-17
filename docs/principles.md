@@ -59,3 +59,52 @@ Repetition of an identical shape is fine — it is greppable and safe to change
 everywhere at once. Two ways of expressing one operation is the defect: every
 rule about that operation must then know both, and the third way is invisible
 until it fails.
+
+---
+
+## SOLID
+
+The five that name how objects are shaped. They are principles like the rest —
+judgements, unchecked, and each one produces law only where it produces something
+checkable.
+
+### `single-responsibility` — One reason to change
+
+A class exists because one concern owns it, and it changes when that concern
+changes. Two reasons to edit a file means two classes sharing one. Optional
+attributes piling up on a record is the same tell in the schema: several concepts
+sharing a table, with the nulls marking the seam.
+
+*Produces* `no-nullable-columns`, and the object boundaries the constitution asks
+for.
+
+### `open-closed` — Extend by adding, not by editing
+
+A new case should arrive as a new object the existing code already knows how to
+call, not as another branch inside a method that has to be re-read and re-tested.
+Where a rule genuinely has a fixed, small set of cases — three match results, not
+an open family — a plain conditional is honest and an abstraction invented to avoid
+it is not. The test is whether the set is expected to grow.
+
+### `liskov-substitution` — A subtype keeps its parent's promises
+
+Anything accepting a type must work with every subtype of it, without asking which
+one it has. A subclass that raises where its parent returns, or narrows what it
+accepts, is not a subtype — it is a different thing wearing the name. In practice
+this rules out the `is_a?` check that exists to work around one implementation.
+
+### `interface-segregation` — Depend on what you call, not on what exists
+
+An object should not be handed a collaborator with twenty methods so it can call
+one. It also should not be handed a whole record so it can read one field, or a
+whole database so it can read one row — which is why the object that owns the
+ranking rules takes the standings and a result, and knows nothing about storage.
+
+### `dependency-inversion` — The rule does not reach for its plumbing
+
+The object holding a decision does not open a connection, read a config file or
+find its own collaborators. They arrive as arguments. The caller — which already
+knows where it is running — supplies them. That is what makes a rule testable
+without a database and reusable from a second caller.
+
+*Produces* `the-ranking-rules-live-in-one-object`.
