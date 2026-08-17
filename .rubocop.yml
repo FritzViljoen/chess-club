@@ -1,9 +1,10 @@
 # Omakase Ruby styling for Rails
 inherit_gem: { rubocop-rails-omakase: rubocop.yml }
 
-# Loads every cop under lib/rubocop/cop/schema.
+# Loads every cop under lib/rubocop/cop.
 require:
   - ./lib/rubocop/schema.rb
+  - ./lib/rubocop/model.rb
 
 # House rules for the schema, documented at the top of each cop: a nullable
 # column and a database default each put a second, invisible answer next to
@@ -25,6 +26,14 @@ Schema/NoColumnDefaults:
     - "db/migrate/*.rb"
   Exclude:
     - "db/migrate/*.*.rb"
+
+# A callback hides work behind `save`: the caller reads one method and gets
+# several, in an order nothing states. Concerns are included into models, so
+# they are held to the same rule.
+Model/NoCallbacks:
+  Enabled: true
+  Include:
+    - "app/models/**/*.rb"
 
 # Fights Schema/NoNullableColumns: it wants a default alongside NOT NULL
 # so the migration survives a populated table. Add the column nullable,

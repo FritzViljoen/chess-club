@@ -1,6 +1,7 @@
 require "test_helper"
 require "rubocop"
 require_relative "../../../lib/rubocop/schema"
+require_relative "../../../lib/rubocop/model"
 
 # Base class for the schema-cop tests.
 #
@@ -14,9 +15,16 @@ class CopCase < ActiveSupport::TestCase
   MIGRATION_PATH = "db/migrate/20260817120000_example.rb"
 
   class_attribute :cop_class
+  # The path rubocop is told the source came from. Cops scoped to somewhere
+  # other than db/migrate say so with `on_path`.
+  class_attribute :source_path, default: MIGRATION_PATH
 
   def self.polices(cop_class)
     self.cop_class = cop_class
+  end
+
+  def self.on_path(path)
+    self.source_path = path
   end
 
   private
@@ -57,7 +65,7 @@ class CopCase < ActiveSupport::TestCase
     def offenses(source)
       config = RuboCop::Config.new({ cop_class.badge.to_s => { "Enabled" => true } },
         Rails.root.join(".rubocop.yml").to_s)
-      processed = RuboCop::ProcessedSource.new(source, RUBY_VERSION.to_f, MIGRATION_PATH)
+      processed = RuboCop::ProcessedSource.new(source, RUBY_VERSION.to_f, source_path)
 
       RuboCop::Cop::Commissioner.new([ cop_class.new(config) ]).investigate(processed).offenses
     end
