@@ -30,3 +30,7 @@ amended by a decision that names the law it changes.
 | [`no-database-defaults`](no-database-defaults.md) | No column carries a database default |
 | [`a-nullable-column-lives-inside-one-migration`](a-nullable-column-lives-inside-one-migration.md) | A column may be nullable only between two statements of one method |
 | [`no-lifecycle-callbacks`](no-lifecycle-callbacks.md) | No model registers an Active Record lifecycle callback |
+| [`arguments-are-typed-at-construction`](arguments-are-typed-at-construction.md) | Every argument of a domain object is type-checked where it arrives |
+| [`a-service-returns-a-result`](a-service-returns-a-result.md) | Every service answers with a result |
+| [`untrusted-input-is-parsed-at-the-seam`](untrusted-input-is-parsed-at-the-seam.md) | Request input is parsed by `TypedParams`, at the seam, and nowhere else |
+| [`a-time-names-its-zone`](a-time-names-its-zone.md) | A time value names the zone it is in; nothing reads an ambient one |

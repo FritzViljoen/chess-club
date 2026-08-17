@@ -57,6 +57,123 @@ invokes.
 - **Guard:** `Model/NoCallbacks`, scoped to `app/models/**/*.rb`. Fails CI.
 - **Decision:** [`no-lifecycle-callbacks.md`](decisions/no-lifecycle-callbacks.md)
 
+## `arguments-are-typed-at-construction` — Every argument of a service is type-checked where it arrives
+
+A `Service` takes its arguments in a hand-written `initialize` and passes every
+keyword through a `TypedArguments` guard. The guard asserts and never coerces; a
+mismatch raises `ArgumentError`, because it is a caller defect and not an answer
+anybody is waiting for.
+
+The boundary is the point: inside the service nothing re-checks an argument, and
+a failure has a side — at the guard it is the caller's defect, past it the
+service's own.
+
+The initializer is written, not generated. A macro that declared the inputs and
+built the initializer behind them would hide both the assignment and the
+assertion, and `typed(on, Date)` would stop being greppable.
+
+- **Principle:** `nothing-fails-quietly`, `make-the-wrong-thing-impossible`
+- **Guard:** `Service/NoUnguardedArguments`, over `app/**/*.rb`. Fails CI. It
+  recognises a service by what it inherits, not by where it is filed, and counts
+  `typed`, `typed_enum`, `typed_array` and `typed_hash` as guards.
+  Anything that is not a named keyword is its own offense — `**options`, `*args`,
+  `(...)`, a positional parameter, a positional Hash default. `Service.call(**arguments)`
+  hands its keywords to a keyword-less initializer as one positional Hash and the
+  call succeeds, so collecting parameters is a hole rather than an impossibility.
+- **Guard's limit:** it checks that a keyword is guarded, never that the type
+  named is the right one.
+- **Decision:**
+  [`arguments-are-typed-at-construction.md`](decisions/arguments-are-typed-at-construction.md)
+
+## `a-service-returns-a-result` — Every service answers with a result
+
+`Service#call` returns a `Result` — `success(value)` or `failure(:code)` — and
+`Service.call` raises `TypeError` on anything else. A refusal is a code the
+caller can handle; a defect raises and is nobody's error message.
+
+A service that reads answers `success(rows)`, the same as one that writes. There
+is one shape, so a caller never has to know which kind it is holding, and an
+empty answer is an answer rather than a refusal.
+
+Reading and writing are separate services all the same. One operation per class,
+and no flag deciding which of the two a call is doing.
+
+- **Principle:** `nothing-fails-quietly`, `one-way-to-say-each-thing`
+- **Guard:** `Service.call` itself, which raises rather than passing on whatever
+  `call` evaluated to. Tested in both directions.
+- **Guard's limit:** nothing checks that a reading service does not write, or
+  that a service does only one thing. That is review's.
+- **Decision:**
+  [`a-service-returns-a-result.md`](decisions/a-service-returns-a-result.md)
+
+## `untrusted-input-is-parsed-at-the-seam` — Request input is parsed by `TypedParams`, at the seam, and nowhere else
+
+A parameter is a string somebody typed. It becomes a Date, an Integer, a decimal,
+a boolean or a value from a closed set in `app/controllers/concerns/typed_params.rb`,
+and it does so once. Never inline in an action, where `Date.parse(params[:on])`
+turns a typo into a 500; never in the domain, which is handed real values and
+asserts them.
+
+Each parser has two forms: the plain one answers with the caller's default, the
+bang form bounces as `BadParam` — a flash and a redirect for an HTML request, a
+plain 400 for anything else.
+
+- **Principle:** `nothing-fails-quietly`, `one-decision-one-place`
+- **Guard:** `Controller/NoInlineParamParse`, over `app/controllers/**/*.rb`.
+  Fails CI. It flags `parse`, `strptime` and `iso8601` **on any receiver**, the
+  raising `Kernel` conversions, and the casts — `to_date`, `to_datetime`,
+  `to_time`, `in_time_zone` — whenever the value came from `params`. A zone held
+  as `Time.zone`, as `Time.find_zone!(…)`, or as whatever `time_zone_param!`
+  answered with is caught alike, called with `.` or `&.`.
+- **Guard's limit:** `JSON` and `URI` are exempt, having no parser here to be
+  sent to. `to_i` and `to_f` cannot raise and read no zone, so the cop leaves
+  them alone; they coerce silently, which is its own defect, and no check catches
+  it. Neither does it see a parse of a local assigned from `params` earlier.
+- **Decision:**
+  [`untrusted-input-is-parsed-at-the-seam.md`](decisions/untrusted-input-is-parsed-at-the-seam.md)
+
+## `a-time-names-its-zone` — A time value names the zone it is in; nothing reads an ambient one
+
+Two halves of one rule.
+
+**At the seam**, `date_param`, `time_param` and their bang forms take
+`time_zone:` as a required keyword — a parameter to read the zone from, an IANA
+name, or a zone already cast. There is no default: not `Time.zone`, not a
+configured setting, and nothing read off the request on the parser's own
+initiative. `default: :today` and `default: :now` resolve in that zone, so an
+action never reaches for `Date.current`. Where the requester's own zone is
+wanted, the action says so — `time_zone: :time_zone` — and a request arriving
+without one bounces because that action asked for it, not because every request
+must carry it.
+
+**A time that states its own offset must agree with that zone.** Where the string
+carries one and the two disagree, the request holds two answers and neither is
+taken: it bounces.
+
+**In a service**, a time argument is an `ActiveSupport::TimeWithZone`, asserted
+with `typed` like anything else. A `Time` or a `DateTime` carries whatever offset
+the process had, chosen by nobody, so it is refused **as a declared type and as a
+value**: `typed(at, Time)` raises, and so does a `DateTime` handed in as a
+`Date` — which it is a subclass of. A `Date` has no zone and is asserted as
+normal.
+
+**A time-like value that is not a moment travels as a String.** A local pick-up
+time — "18:30", meaning half past six wherever it happens — is a wall-clock
+reading. Building a `Time` for one invents a date and an offset it never had.
+
+- **Principle:** `nothing-fails-quietly`, `one-decision-one-place`
+- **Guard:** the required keyword, which is Ruby's own `ArgumentError` at the
+  call site; the offset check in `time_param`, which bounces a string that
+  disagrees with it; `TypedArguments`'s refusal of `Time` and `DateTime` as types;
+  `Service/NoUnguardedArguments`, which fails a keyword no guard asserts; and
+  `Controller/NoInlineParamParse`, which forbids the
+  `Time.zone.parse(params[...])` that would go around all of it. Each tested.
+- **Guard's limit:** nothing yet stops `Time.zone`, `Time.current` or
+  `Date.current` being read somewhere else in the application. That wants its own
+  cop, and until it exists this half is convention.
+- **Decision:**
+  [`a-time-names-its-zone.md`](decisions/a-time-names-its-zone.md)
+
 ## `ci-is-one-command` — CI runs exactly what a developer runs
 
 The build runs `bin/ci` and nothing else. Its steps live in `config/ci.rb`, so a
