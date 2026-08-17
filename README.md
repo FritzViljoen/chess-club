@@ -1,24 +1,38 @@
-# README
+# Chess Club Administration
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+A small Rails application for a local chess club to administer its members
+and keep their ranking current. Members are ranked `1..n`, where 1 is the
+club's strongest player; recording a match updates the ranking.
 
-Things you may want to cover:
+## Requirements
 
-* Ruby version
+- Ruby 3.3.5 (see `.ruby-version`)
+- SQLite 3
 
-* System dependencies
+No other services are needed.
 
-* Configuration
+## Getting started
 
-* Database creation
+```sh
+bin/setup
+```
 
-* Database initialization
+That installs gems, prepares the database and starts the server on
+http://localhost:3000. To skip the server, run `bin/setup --skip-server`
+and start it later with `bin/dev`.
 
-* How to run the test suite
+## Tests
 
-* Services (job queues, cache servers, search engines, etc.)
+```sh
+bin/rails test
+```
 
-* Deployment instructions
+## Everything CI runs
 
-* ...
+```sh
+bin/ci
+```
+
+Style, gem and JavaScript audits, Brakeman, the test suite and the seeds.
+The GitHub Actions workflow runs the same command, so a green `bin/ci`
+locally means a green build. The steps live in `config/ci.rb`.
