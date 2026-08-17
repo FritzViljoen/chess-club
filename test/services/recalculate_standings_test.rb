@@ -84,6 +84,22 @@ class RecalculateStandingsTest < ActiveSupport::TestCase
       "expected the later contest entered first to reach the same answer"
   end
 
+  test "two contests in the same minute give one board, whichever was entered first" do
+    people = ladder(6)
+    record(people[5], people[0], "2026-03-03 18:00")
+    record(people[4], people[1], "2026-03-03 18:00")
+    forwards = order
+
+    ContestResult.delete_all
+    Contest.delete_all
+    RecalculateStandings.call
+    record(people[4], people[1], "2026-03-03 18:00")
+    record(people[5], people[0], "2026-03-03 18:00")
+
+    assert_equal forwards, order,
+      "expected a shared moment to be broken by who played, not by which was typed first"
+  end
+
   private
     def order
       StandingsCache.order(:position).pluck(:person_id)

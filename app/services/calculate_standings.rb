@@ -23,8 +23,13 @@ class CalculateStandings < Service
       @contest_results.group_by(&:contest_id).values.sort_by { |results| played(results) }
     end
 
+    # Two contests in the same minute are ordered by who played in them, not by
+    # `contest_id` — an id is entry order, and a board that depends on entry
+    # order is the thing this whole design exists to prevent. Which of two
+    # simultaneous contests folds first is arbitrary; that it is the same
+    # arbitrary answer every time is not.
     def played(results)
-      [ results.first.contest.played_at, results.first.contest_id ]
+      [ results.first.contest.played_at, results.map(&:person_id).sort, results.first.contest_id ]
     end
 
     def apply(ladder, results)
