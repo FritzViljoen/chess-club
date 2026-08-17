@@ -21,10 +21,11 @@
 
   <body>
     <nav>
-      <%= link_to people_path, class: "wordmark" do %>
+      <%= link_to standings_path, class: "wordmark" do %>
         <span class="knight" aria-hidden="true">&#9822;</span> Chess Club
       <% end %>
       <span class="nav-links">
+        <%= link_to "Leader board", standings_path %>
         <%= link_to "Members", people_path %>
         <%= link_to "Matches", contests_path %>
       </span>
