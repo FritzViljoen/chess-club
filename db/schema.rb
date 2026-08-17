@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_17_132448) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_17_133105) do
   create_table "contest_results", force: :cascade do |t|
     t.integer "contest_id", null: false
     t.datetime "created_at", null: false
@@ -38,6 +38,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_17_132448) do
     t.string "surname", null: false
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_people_on_email", unique: true, where: "email != ''"
+  end
+
+  create_table "standings_cache", force: :cascade do |t|
+    t.integer "person_id", null: false
+    t.integer "position", null: false
+    t.index ["person_id"], name: "index_standings_cache_on_person_id", unique: true
+    t.index ["position"], name: "index_standings_cache_on_position", unique: true
   end
 
   add_foreign_key "contest_results", "contests"
