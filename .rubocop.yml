@@ -5,6 +5,7 @@ inherit_gem: { rubocop-rails-omakase: rubocop.yml }
 require:
   - ./lib/rubocop/schema.rb
   - ./lib/rubocop/model.rb
+  - ./lib/rubocop/vocabulary.rb
 
 # House rules for the schema, documented at the top of each cop: a nullable
 # column and a database default each put a second, invisible answer next to
@@ -34,6 +35,36 @@ Model/NoCallbacks:
   Enabled: true
   Include:
     - "app/models/**/*.rb"
+
+# No industry vocabulary in code. Applied from the start rather than ratcheted
+# down later, because this tree is new and can simply not acquire the debt.
+#
+# Every term is listed with its plural: matching is case-insensitive but not
+# inflecting, so `member` does not cover `members`. Add both, always.
+#
+# `test/` is exempt: a fixture has to be free to name the thing whose ban it is
+# proving. The fixtures are swept to neutral nouns anyway, and the cop's own
+# tests use an invented term (`widget`), so the exemption is headroom rather
+# than a hiding place.
+Vocabulary/BannedTerms:
+  Enabled: true
+  Include:
+    - "app/**/*.rb"
+    - "db/**/*.rb"
+    - "lib/**/*.rb"
+  BannedTerms:
+    - member
+    - members
+    - club
+    - clubs
+    - league
+    - leagues
+    - game
+    - games
+    - rating
+    - ratings
+    - team
+    - teams
 
 # Fights Schema/NoNullableColumns: it wants a default alongside NOT NULL
 # so the migration survives a populated table. Add the column nullable,

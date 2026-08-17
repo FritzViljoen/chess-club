@@ -26,8 +26,8 @@ module RuboCop
           text time timestamp uuid virtual
         ].freeze
 
-        # These name an association, not a column: `t.references :club` creates
-        # `club_id`, and a polymorphic one creates `club_type` alongside it.
+        # These name an association, not a column: `t.references :group` creates
+        # `group_id`, and a polymorphic one creates `group_type` alongside it.
         REFERENCE_TYPES = %i[references belongs_to add_reference add_belongs_to].freeze
 
         BLOCK_KINDS = COLUMN_TYPES.to_h { |type| [ type, :create ] }.merge(
@@ -113,7 +113,7 @@ module RuboCop
           end
 
           # The argument carrying the new value: the third for the migration
-          # form (`change_column_null :members, :email, false`), the second for
+          # form (`change_column_null :people, :email, false`), the second for
           # the block form (`t.change_null :email, false`). Nil when it was not
           # given — a trailing options hash does not count.
           def value_argument(node)
