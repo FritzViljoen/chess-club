@@ -115,15 +115,18 @@ body > nav a:hover, body > nav a:focus-visible { color: var(--square-dark); bord
 .verb { color: var(--ink-soft); }
 td.quiet { color: var(--ink-soft); font-size: 0.92rem; }
 td.when { white-space: nowrap; font-family: var(--figure); font-size: 0.84rem; width: 1%; }
-/* The email column takes the slack, so nothing else has to wrap. */
-td.fill { width: 100%; }
+/* The email column takes the slack. `break-word`, not `anywhere` — `anywhere`
+   shrinks the column's intrinsic width to one character and crushes it. */
+td.fill { width: 100%; overflow-wrap: break-word; }
 td.who { white-space: nowrap; font-family: var(--serif); font-size: 1.05rem; }
 td.who a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--rule); }
 td.who a:hover { color: var(--square-dark); border-bottom-color: var(--square-dark); }
 td.result { font-family: var(--serif); font-size: 1.05rem; }
 
 main {
-  max-width: 46rem;
+  /* Wide enough for the members grid's six columns; narrower and that table
+     alone overruns the heading, toolbar and pagination. */
+  max-width: 58rem;
   margin: 0 auto;
   padding: 3rem 2rem 5rem;
 }
@@ -173,6 +176,15 @@ tbody tr:hover td { background: rgba(63, 92, 72, 0.04); }
   font-size: 0.92rem;
   width: 1%;
   white-space: nowrap;
+}
+
+/* The leader board's square badge overrides this under `.standings`. */
+th.position, td.position {
+  width: 1%;
+  white-space: nowrap;
+  font-family: var(--figure);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.92rem;
 }
 
 td.actions { text-align: right; white-space: nowrap; }
@@ -328,6 +340,8 @@ dl {
   border: 1px solid var(--rule);
   padding: 1.4rem 1.5rem;
   margin: 0;
+  /* Stops where its values do, rather than at the width the grids need. */
+  max-width: 34rem;
 }
 
 dt {
@@ -354,6 +368,8 @@ dd:last-child { margin-bottom: 0; }
   font-weight: 600;
   margin-bottom: 0.4rem;
 }
+
+.field.checkbox input[type=checkbox] { margin: 0; vertical-align: middle; }
 
 .field.checkbox label {
   display: inline;
@@ -441,6 +457,10 @@ td.actions button:hover { background: transparent; text-decoration: underline; }
 }
 
 p .button { margin-bottom: 1.5rem; }
+
+/* The table scrolls, not the page — otherwise the heading and toolbar slide
+   out of view on a narrow screen. */
+.scroller { overflow-x: auto; }
 
 /* ---- Small screens ------------------------------------------------------- */
 

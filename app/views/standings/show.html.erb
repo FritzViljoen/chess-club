@@ -5,25 +5,27 @@
 <% else %>
   <p class="standfirst">Ranked 1 to <%= @page.total %>. Rank 1 is the club's strongest player.</p>
 
-  <table class="standings">
-    <thead>
-      <tr><th class="position">Rank</th><th>Player</th><th class="number">Games played</th></tr>
-    </thead>
-    <tbody>
-      <% @page.rows.each do |standing| %>
-        <tr>
-          <td class="position"><%= standing.position %></td>
-          <td class="name">
-            <%= standing.person.full_name %>
-            <% if standing.position == 1 %>
-              <span class="crown" title="Top of the board" aria-label="Top of the board">&#9812;</span>
-            <% end %>
-          </td>
-          <td class="number"><%= standing.contest_results_count %></td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
+  <div class="scroller">
+    <table class="standings">
+      <thead>
+        <tr><th class="position">Rank</th><th>Player</th><th class="number">Games played</th></tr>
+      </thead>
+      <tbody>
+        <% @page.rows.each do |standing| %>
+          <tr>
+            <td class="position"><%= standing.position %></td>
+            <td class="name">
+              <%= standing.person.full_name %>
+              <% if standing.position == 1 %>
+                <span class="crown" title="Top of the board" aria-label="Top of the board">&#9812;</span>
+              <% end %>
+            </td>
+            <td class="number"><%= standing.contest_results_count %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
 
   <%= render "pagination", page: @page, listing: @listing %>
 <% end %>
