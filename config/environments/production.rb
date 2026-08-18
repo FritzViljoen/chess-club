@@ -1,5 +1,10 @@
 require "active_support/core_ext/integer/time"
 
+# Anything Active Model does not read as false stays secure — `FORCE_SSL=TRUE`,
+# a typo, or an empty value cannot quietly disable TLS. Only `false`, `0` or
+# `off` turn it off, which is what `compose.yaml` passes.
+secure_unless_disabled = ->(name) { ActiveModel::Type::Boolean.new.cast(ENV[name].presence || "true") }
+
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
@@ -24,11 +29,11 @@ Rails.application.configure do
   # Store uploaded files on the local file system (see config/storage.yml for options).
   config.active_storage.service = :local
 
-  # Assume all access to the app is happening through a SSL-terminating reverse proxy.
-  config.assume_ssl = true
-
-  # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-  config.force_ssl = true
+  # On by default; `compose.yaml` opts out. Serving plain HTTP with these on
+  # redirects every write to an `https://` port that speaks HTTP, so the app
+  # reads fine and dead-ends on the first save.
+  config.assume_ssl = secure_unless_disabled.call("RAILS_ASSUME_SSL")
+  config.force_ssl = secure_unless_disabled.call("RAILS_FORCE_SSL")
 
   # Skip http-to-https redirect for the default health check endpoint.
   # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }

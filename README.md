@@ -77,6 +77,32 @@ That installs gems, prepares the database and starts the server on
 http://localhost:3000. To skip the server, run `bin/setup --skip-server`
 and start it later with `bin/dev`.
 
+## Deploying
+
+```sh
+cp .env.example .env
+printf 'SECRET_KEY_BASE=%s\n' "$(openssl rand -hex 64)" >> .env
+docker compose up -d --build
+```
+
+One container, on http://localhost:3000, over plain HTTP. For anything reachable
+from outside a trusted network, put a TLS-terminating proxy in front of it and
+set `RAILS_ASSUME_SSL` and `RAILS_FORCE_SSL` back to true — `production.rb`
+defaults both on, and `.env` is what opts out.
+
+The board lives in SQLite on the `storage` volume, which outlives the
+container — so a redeploy migrates the database and leaves the club's people
+and matches alone. Destroy the volume and you destroy the board.
+
+There is no `config/master.key` to distribute: this application keeps no
+credentials, so `SECRET_KEY_BASE` is the only secret.
+
+To boot a populated board to look at rather than an empty one, set
+`SEED_ON_FIRST_BOOT=true` before the first `up`. It only ever seeds the boot
+that creates the database.
+
+`docker compose logs -f` follows it; `/up` is the health endpoint Compose polls.
+
 ## Tests
 
 ```sh

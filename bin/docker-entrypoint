@@ -1,8 +1,13 @@
 #!/bin/bash -e
 
-# If running the rails server then create or migrate existing database
 if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
-  ./bin/rails db:prepare
+  # Both migrate. Only `db:prepare` seeds, and only on the boot that created the
+  # database — `db/seeds.rb` opens with `delete_all`, so it must never re-run.
+  if [ "${SEED_ON_FIRST_BOOT}" == "true" ]; then
+    ./bin/rails db:prepare
+  else
+    ./bin/rails db:create db:migrate
+  fi
 fi
 
 exec "${@}"
