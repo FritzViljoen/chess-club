@@ -15,12 +15,8 @@
     <table>
       <thead>
         <tr>
-          <th>
-            <% ascending = @sort == "oldest" %>
-            <%= render "sort_toggle", label: "Played", ascending: ascending,
-                  flip_to: ascending ? "newest" : "oldest", listing: @listing %>
-          </th>
-          <th>Result</th>
+          <th><%= render "sort_header", key: "played", label: "Played", listing: @listing %></th>
+          <th><%= render "sort_header", key: "result", label: "Result", listing: @listing %></th>
           <th></th>
         </tr>
       </thead>

@@ -1,6 +1,8 @@
-<% if listing.sort == key %>
-  <span class="sorted"><%= label %><span class="marker" aria-hidden="true">▾</span></span>
-  <span class="visually-hidden">, sorted by this column</span>
-<% else %>
-  <%= link_to label, url_for(listing.showing(sort: key)), class: "sortable" %>
+<% sorted = listing.sorted_by?(key) %>
+<% ascending = listing.direction == "asc" %>
+<%= link_to url_for(listing.turned(key)), class: sorted ? "sortable sorted" : "sortable" do %>
+  <%= label %><% if sorted %><span class="marker" aria-hidden="true"><%= ascending ? "▴" : "▾" %></span><% end %>
+<% end %>
+<% if sorted %>
+  <span class="visually-hidden">, sorted <%= ascending ? "ascending" : "descending" %>. Activate to reverse.</span>
 <% end %>

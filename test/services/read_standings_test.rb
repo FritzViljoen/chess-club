@@ -10,7 +10,7 @@ class ReadStandingsTest < ActiveSupport::TestCase
   end
 
   test "answers with an empty page rather than a refusal when nobody has joined" do
-    result = ReadStandings.call(page: 1)
+    result = read
 
     assert_empty result.rows
     assert_equal 1, result.pages, "expected an empty board to still be one page"

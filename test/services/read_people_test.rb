@@ -99,9 +99,14 @@ class ReadPeopleTest < ActiveSupport::TestCase
       "expected both matches to survive a different sort"
   end
 
-  test "refuses a sort it does not know" do
-    assert_raises(ArgumentError, "expected an unknown sort to be a caller defect") do
-      ReadPeople.call(sort: "; DROP TABLE people", page: 1, query: "")
+  test "refuses a sort or a direction it does not know" do
+    injected = assert_raises(ArgumentError) do
+      ReadPeople.call(sort: "; DROP TABLE people", direction: "asc", page: 1, query: "")
+    end
+    assert_match(/expected one of/, injected.message, "expected the sort allowlist, not a missing keyword")
+
+    assert_raises(ArgumentError) do
+      ReadPeople.call(sort: "name", direction: "asc; DROP TABLE people", page: 1, query: "")
     end
   end
 
@@ -123,6 +128,48 @@ class ReadPeopleTest < ActiveSupport::TestCase
     assert_nil read.rows.sole.position, "expected the left join to keep the row"
   end
 
+  test "a column with distinct values reverses when the direction is turned around" do
+    create("Ana", "Abrahams", joined_on: Date.new(2026, 1, 1))
+    create("Bea", "Mokoena", joined_on: Date.new(2026, 2, 1))
+    create("Cy", "Zulu", joined_on: Date.new(2026, 3, 1))
+
+    %w[ rank name email joined ].each do |sort|
+      forwards = read(sort: sort, direction: "asc").rows.map(&:id)
+      backwards = read(sort: sort, direction: "desc").rows.map(&:id)
+
+      assert_equal forwards.reverse, backwards, "expected #{sort} to reverse"
+    end
+  end
+
+  # Every contest counts for both players, so no set of people can have all
+  # different totals — someone at zero and someone who has played everybody
+  # cannot both exist. The column turns around; the tie behind it does not.
+  test "turning the count around puts the busiest first, ties still by surname" do
+    busy = create("Ana", "Abrahams")
+    quiet = create("Bea", "Mokoena")
+    create("Cy", "Zulu")
+    CreateContest.call(played_at: LocalZone.zone.parse("2026-07-01 18:00"),
+      winner: busy, loser: quiet, tie: false)
+
+    assert_equal %w[ Zulu Abrahams Mokoena ], read(sort: "played", direction: "asc").rows.map(&:surname)
+    assert_equal %w[ Abrahams Mokoena Zulu ], read(sort: "played", direction: "desc").rows.map(&:surname)
+  end
+
+  test "a tie holds its order, so turning the column around does not shuffle it" do
+    create("Ana", "Abrahams")
+    create("Zaan", "Zulu")
+
+    forwards = read(sort: "played", direction: "asc").rows.map(&:surname)
+    backwards = read(sort: "played", direction: "desc").rows.map(&:surname)
+
+    assert_equal %w[ Abrahams Zulu ], forwards
+    assert_equal forwards, backwards, "expected the surname tiebreak to read forwards either way"
+  end
+
+  test "a direction outside the two is the caller's defect" do
+    assert_raises(ArgumentError) { read(direction: "sideways") }
+  end
+
   private
     def count_queries
       queries = 0
@@ -132,8 +179,8 @@ class ReadPeopleTest < ActiveSupport::TestCase
       queries
     end
 
-    def read(sort: "name", page: 1, query: "")
-      ReadPeople.call(sort: sort, page: page, query: query)
+    def read(sort: "name", direction: nil, page: 1, query: "")
+      ReadPeople.call(sort: sort, direction: direction || ReadPeople::NATURAL.fetch(sort), page: page, query: query)
     end
 
     def create(name, surname, joined_on: Date.new(2026, 1, 5))

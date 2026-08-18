@@ -1,16 +1,22 @@
 class ReadPeople < Service
-  ORDERS = {
-    "name" => { surname: :asc, name: :asc },
-    "joined" => { joined_on: :asc, id: :asc },
-    "played" => { contest_results_count: :desc, surname: :asc }
+  # First column takes the asked-for direction; the rest are the tiebreak.
+  COLUMNS = {
+    "rank" => { by: %i[ position ], natural: "asc" },
+    "name" => { by: %i[ surname name ], natural: "asc" },
+    "email" => { by: %i[ email ], natural: "asc" },
+    "joined" => { by: %i[ joined_on id ], natural: "asc" },
+    "played" => { by: %i[ contest_results_count surname ], natural: "desc" }
   }.freeze
 
-  SORTS = ORDERS.keys.freeze
+  SORTS = COLUMNS.keys.freeze
+
+  NATURAL = COLUMNS.transform_values { |column| column.fetch(:natural) }.freeze
 
   MATCHES = SearchTerm.matching("name", "surname", "email").freeze
 
-  def initialize(sort:, page:, query:)
+  def initialize(sort:, direction:, page:, query:)
     @sort = typed_enum(sort, SORTS)
+    @direction = typed_enum(direction, Listing::DIRECTIONS)
     @page = typed(page, Integer)
     @query = typed(query, String)
   end
@@ -31,8 +37,13 @@ class ReadPeople < Service
       Person.where(MATCHES, term: term.anywhere)
     end
 
+    def order
+      first, *tiebreak = COLUMNS.fetch(@sort).fetch(:by)
+
+      { first => @direction.to_sym }.merge(tiebreak.index_with(:asc))
+    end
+
     def rows(number)
-      order = ORDERS.fetch(@sort)
       offset = Page.offset_for(number)
 
       found

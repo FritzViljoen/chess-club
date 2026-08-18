@@ -291,7 +291,7 @@ td.actions a { font-size: 0.85rem; }
 
 /* ---- Sorting and paging -------------------------------------------------- */
 
-th a.sortable, th .sorted {
+th a.sortable {
   font: inherit;
   letter-spacing: inherit;
   text-transform: inherit;
@@ -301,7 +301,7 @@ th a.sortable, th .sorted {
 }
 
 th a.sortable:hover { color: var(--square-dark); border-bottom-color: var(--square-dark); }
-th .sorted { color: var(--ink); border-bottom: none; }
+th a.sorted { color: var(--ink); border-bottom-color: var(--ink); }
 .marker { margin-left: 0.25rem; color: var(--brass); }
 
 .pagination {

@@ -1,9 +1,10 @@
 class ContestsController < ApplicationController
   def index
-    @sort = enum_param(:sort, ReadContests::SORTS, default: "newest")
+    @sort = enum_param(:sort, ReadContests::SORTS, default: "played")
     @query = text_param(:search)
-    @listing = Listing.new(sort: @sort, query: @query)
-    @page = ReadContests.call(sort: @sort, page: integer_param(:page, default: 1), query: @query)
+    @direction = enum_param(:dir, Listing::DIRECTIONS, default: ReadContests::NATURAL.fetch(@sort))
+    @listing = Listing.new(sort: @sort, direction: @direction, query: @query, natural: ReadContests::NATURAL)
+    @page = ReadContests.call(sort: @sort, direction: @direction, page: integer_param(:page, default: 1), query: @query)
   end
 
   def new
