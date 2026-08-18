@@ -14,6 +14,28 @@ is a `Contest`, a draw is a tie, and the ranked list is the standings — see
 [`docs/decisions/plain-words-in-code.md`](docs/decisions/plain-words-in-code.md)
 for why, and the spec below for the mapping in full.
 
+## The screens
+
+**Leader board** — the ranking, 1 to n, in board order. It is the one grid with
+no sortable column: the order is the point.
+
+![The leader board, ranked 1 to 14](docs/screenshots/leader-board.png)
+
+**Members** — create, show, update and delete, with each person's current rank
+read from the standings. Every column sorts, both ways, and the search survives
+a re-sort.
+
+![The members grid](docs/screenshots/members.png)
+
+**Matches** — every contest played, newest first. Entered in any order; the
+board is worked out from all of them by when they were played.
+
+![The matches grid](docs/screenshots/matches.png)
+
+**Recording a match** — two players and a winner, or a draw.
+
+![The form for recording a match](docs/screenshots/record-a-match.png)
+
 ## Documentation
 
 | If you want | Read |
