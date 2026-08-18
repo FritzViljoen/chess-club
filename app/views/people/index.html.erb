@@ -13,9 +13,9 @@
     <table>
       <thead>
         <tr>
-          <th class="position">Rank</th>
+          <th class="position"><%= render "sort_header", key: "rank", label: "Rank", listing: @listing %></th>
           <th><%= render "sort_header", key: "name", label: "Player", listing: @listing %></th>
-          <th>Email</th>
+          <th><%= render "sort_header", key: "email", label: "Email", listing: @listing %></th>
           <th><%= render "sort_header", key: "joined", label: "Joined", listing: @listing %></th>
           <th class="number"><%= render "sort_header", key: "played", label: "Games", listing: @listing %></th>
           <th></th>

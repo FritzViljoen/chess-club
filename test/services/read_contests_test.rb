@@ -7,7 +7,7 @@ class ReadContestsTest < ActiveSupport::TestCase
     record(ann, bob, "2026-03-03 18:00")
     late = record(bob, ann, "2026-03-09 18:00")
 
-    assert_equal late.id, ReadContests.call(sort: "newest", page: 1, query: "").rows.first.id,
+    assert_equal late.id, read.rows.first.id,
       "expected the most recent match at the top"
   end
 
@@ -17,7 +17,7 @@ class ReadContestsTest < ActiveSupport::TestCase
     early = record(ann, bob, "2026-03-03 18:00")
     record(bob, ann, "2026-03-09 18:00")
 
-    assert_equal early.id, ReadContests.call(sort: "oldest", page: 1, query: "").rows.first.id
+    assert_equal early.id, read(direction: "asc").rows.first.id
   end
 
   test "pages at ten" do
@@ -25,7 +25,7 @@ class ReadContestsTest < ActiveSupport::TestCase
     bob = create_person(email: "bob@example.test", name: "Bob")
     11.times { |index| record(ann, bob, "2026-03-#{format("%02d", index + 3)} 18:00") }
 
-    page = ReadContests.call(sort: "newest", page: 2, query: "")
+    page = read(page: 2)
 
     assert_equal 1, page.rows.size, "expected the eleventh match alone on page two"
     assert_equal 11, page.total
@@ -73,15 +73,72 @@ class ReadContestsTest < ActiveSupport::TestCase
     assert_equal 0, read(query: "zzz").total
   end
 
-  test "refuses a sort it does not know" do
-    assert_raises(ArgumentError, "expected an unknown sort to be a caller defect") do
-      ReadContests.call(sort: "played_at DESC; --", page: 1, query: "")
+  test "refuses a sort or a direction it does not know" do
+    injected = assert_raises(ArgumentError) do
+      ReadContests.call(sort: "played_at DESC; --", direction: "asc", page: 1, query: "")
+    end
+    assert_match(/expected one of/, injected.message, "expected the sort allowlist, not a missing keyword")
+
+    assert_raises(ArgumentError) do
+      ReadContests.call(sort: "played", direction: "played_at DESC; --", page: 1, query: "")
+    end
+  end
+
+  test "a match removed mid-read costs its row, not the page" do
+    ann = create_person(email: "ann@example.test", name: "Ann", surname: "Abrahams")
+    bob = create_person(email: "bob@example.test", name: "Bob", surname: "Mokoena")
+    doomed = record(ann, bob, "2026-03-03 18:00")
+    record(bob, ann, "2026-03-04 18:00")
+
+    reader = ReadContests.new(sort: "played", direction: "desc", page: 1, query: "")
+    reader.define_singleton_method(:ordered_ids) do |_number|
+      Contest.order(played_at: :desc).pluck(:id).tap { RemoveContest.call(contest: doomed) }
+    end
+
+    assert_equal 1, reader.call.rows.size, "expected the surviving match, not a KeyError"
+  end
+
+  test "sorts by the name a row leads with, and turns around" do
+    ann = create_person(email: "ann@example.test", name: "Ann", surname: "Abrahams")
+    bob = create_person(email: "bob@example.test", name: "Bob", surname: "Mokoena")
+    cy = create_person(email: "cy@example.test", name: "Cy", surname: "Zulu")
+    record(cy, ann, "2026-03-03 18:00")
+    record(ann, bob, "2026-03-04 18:00")
+
+    forwards = read(sort: "result", direction: "asc").rows
+    backwards = read(sort: "result", direction: "desc").rows
+
+    assert_equal %w[ Abrahams Zulu ], forwards.map { |contest| contest.in_place_order.first.person.surname }
+    assert_equal forwards.map(&:id).reverse, backwards.map(&:id)
+  end
+
+  test "a draw leads with the first of the two by name, and sorts there" do
+    ann = create_person(email: "ann@example.test", name: "Ann", surname: "Abrahams")
+    zed = create_person(email: "zed@example.test", name: "Zed", surname: "Zulu")
+    CreateContest.call(played_at: LocalZone.zone.parse("2026-03-03 18:00"),
+      winner: zed, loser: ann, tie: true)
+
+    contest = read(sort: "result", direction: "asc").rows.sole
+
+    assert_equal "Abrahams", contest.in_place_order.first.person.surname,
+      "expected a draw to lead with the earlier name, not the one entered first"
+  end
+
+  test "both participants arrive with every row, whatever the sort" do
+    ann = create_person(email: "ann@example.test", name: "Ann", surname: "Abrahams")
+    bob = create_person(email: "bob@example.test", name: "Bob", surname: "Mokoena")
+    record(ann, bob, "2026-03-03 18:00")
+
+    ReadContests::SORTS.each do |sort|
+      contest = read(sort: sort).rows.sole
+
+      assert_equal 2, contest.contest_results.size, "expected #{sort} to keep both participants"
     end
   end
 
   private
-    def read(sort: "newest", page: 1, query: "")
-      ReadContests.call(sort: sort, page: page, query: query)
+    def read(sort: "played", direction: nil, page: 1, query: "")
+      ReadContests.call(sort: sort, direction: direction || ReadContests::NATURAL.fetch(sort), page: page, query: query)
     end
 
     def record(winner, loser, at)

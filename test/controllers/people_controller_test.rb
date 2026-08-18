@@ -110,6 +110,32 @@ class PeopleControllerTest < ActionDispatch::IntegrationTest
     assert_select "dd", text: person.standing_cache.position.to_s
   end
 
+  test "the sorted column offers the turn-around, not a dead heading" do
+    post people_path, params: attributes
+
+    get people_path, params: { sort: "name", dir: "asc" }
+
+    # A link, not the dead <span> the sorted column used to render.
+    assert_select "th a[href=?]", "/people?dir=desc&sort=name"
+  end
+
+  test "an unsorted column opens the way that column reads" do
+    post people_path, params: attributes
+
+    get people_path
+
+    assert_select "th a[href=?]", "/people?dir=desc&sort=played"
+    assert_select "th a[href=?]", "/people?dir=asc&sort=joined"
+  end
+
+  test "a search survives turning a column around" do
+    post people_path, params: attributes
+
+    get people_path, params: { search: "baker", sort: "name", dir: "asc" }
+
+    assert_select "th a[href=?]", "/people?dir=desc&search=baker&sort=name"
+  end
+
   private
     def attributes(**overrides)
       {

@@ -1,9 +1,10 @@
 class PeopleController < ApplicationController
   def index
     @sort = enum_param(:sort, ReadPeople::SORTS, default: "name")
+    @direction = enum_param(:dir, Listing::DIRECTIONS, default: ReadPeople::NATURAL.fetch(@sort))
     @query = text_param(:search)
-    @listing = Listing.new(sort: @sort, query: @query)
-    @page = ReadPeople.call(sort: @sort, page: integer_param(:page, default: 1), query: @query)
+    @listing = Listing.new(sort: @sort, direction: @direction, query: @query, natural: ReadPeople::NATURAL)
+    @page = ReadPeople.call(sort: @sort, direction: @direction, page: integer_param(:page, default: 1), query: @query)
   end
 
   def show
