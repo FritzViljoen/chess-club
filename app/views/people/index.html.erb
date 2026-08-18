@@ -9,33 +9,35 @@
   <% nothing = @query.present? ? "No member matches “#{@query}”." : "No members yet." %>
   <p class="empty"><%= nothing %></p>
 <% else %>
-  <table>
-    <thead>
-      <tr>
-        <th class="position">Rank</th>
-        <th><%= render "sort_header", key: "name", label: "Player", listing: @listing %></th>
-        <th>Email</th>
-        <th><%= render "sort_header", key: "joined", label: "Joined", listing: @listing %></th>
-        <th class="number"><%= render "sort_header", key: "played", label: "Games", listing: @listing %></th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @page.rows.each do |person| %>
+  <div class="scroller">
+    <table>
+      <thead>
         <tr>
-          <td class="position"><%= person.position %></td>
-          <td class="who"><%= link_to person.full_name, person %></td>
-          <td class="quiet fill"><%= person.email %></td>
-          <td class="quiet when"><%= person.joined_on.strftime("%-d %b %Y") %></td>
-          <td class="number"><%= person.contest_results_count %></td>
-          <td class="actions">
-            <%= link_to "Edit", edit_person_path(person) %>
-            <%= button_to "Remove", person, method: :delete, form: { data: { turbo_confirm: "Remove #{person.name}? Their matches go too, and the board is worked out again without them." } } %>
-          </td>
+          <th class="position">Rank</th>
+          <th><%= render "sort_header", key: "name", label: "Player", listing: @listing %></th>
+          <th>Email</th>
+          <th><%= render "sort_header", key: "joined", label: "Joined", listing: @listing %></th>
+          <th class="number"><%= render "sort_header", key: "played", label: "Games", listing: @listing %></th>
+          <th></th>
         </tr>
-      <% end %>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        <% @page.rows.each do |person| %>
+          <tr>
+            <td class="position"><%= person.position %></td>
+            <td class="who"><%= link_to person.full_name, person %></td>
+            <td class="quiet fill"><%= person.email %></td>
+            <td class="quiet when"><%= person.joined_on.strftime("%-d %b %Y") %></td>
+            <td class="number"><%= person.contest_results_count %></td>
+            <td class="actions">
+              <%= link_to "Edit", edit_person_path(person) %>
+              <%= button_to "Remove", person, method: :delete, form: { data: { turbo_confirm: "Remove #{person.name}? Their matches go too, and the board is worked out again without them." } } %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
 
   <%= render "pagination", page: @page, listing: @listing %>
 <% end %>
