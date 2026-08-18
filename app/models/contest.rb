@@ -10,8 +10,10 @@ class Contest < ApplicationRecord
   validate :somebody_finished_first
   validate :played_after_everybody_joined
 
+  # A draw has no winner, so the two are separated by name rather than by which
+  # was entered first — the order a reader sees should not depend on that.
   def in_place_order
-    contest_results.sort_by { |result| [ result.place, result.person_id ] }
+    contest_results.sort_by { |result| [ result.place, result.person.surname, result.person.name ] }
   end
 
   def tie?
